@@ -11,12 +11,11 @@ export interface Product {
     code?: string;
     name?: string;
     description?: string;
-    price?: number;
-    quantity?: number;
-    inventoryStatus?: string;
-    category?: string;
-    image?: string;
-    rating?: number;
+    price?:number,
+    category?:string,
+    quantity?:number,
+    inventoryStatus?:string,
+    rating?:number
 }
 
 @Injectable()
@@ -1278,14 +1277,10 @@ export class ProductService {
             id: this.generateId(),
             name: this.generateName(),
             description: 'Product Description',
-            price: this.generatePrice(),
-            quantity: this.generateQuantity(),
-            category: 'Product Category',
-            inventoryStatus: this.generateStatus(),
-            rating: this.generateRating()
+            inventoryStatus: undefined
         };
 
-        product.image = product.name?.toLocaleLowerCase().split(/[ ,]+/).join('-') + '.jpg';
+       
         return product;
     }
 

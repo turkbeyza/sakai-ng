@@ -21,6 +21,7 @@ export class AppMenu {
     ngOnInit() {
         this.model = [
             {
+
                 label: 'Home',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
@@ -28,6 +29,7 @@ export class AppMenu {
                 label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
+                    { label: 'Hospital', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/hospital'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/uikit/button'] },
                     { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },

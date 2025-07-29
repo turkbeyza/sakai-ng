@@ -14,9 +14,11 @@ import { TableDemo } from './tabledemo';
 import { OverlayDemo } from './overlaydemo';
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
+import { Hospital } from '../deneme/hospital';
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
+    { path: 'hospital', data: { breadcrumb: 'hospital' }, component: Hospital },
     { path: 'charts', data: { breadcrumb: 'Charts' }, component: ChartDemo },
     { path: 'file', data: { breadcrumb: 'File' }, component: FileDemo },
     { path: 'formlayout', data: { breadcrumb: 'Form Layout' }, component: FormLayoutDemo },

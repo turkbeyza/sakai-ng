@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, Output,  EventEmitter, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -32,7 +32,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-crud',
+    selector: 'app-hospital-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -72,7 +72,7 @@ interface ExportColumn {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+            [globalFilterFields]="['name', 'country.name', 'representative.name']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedProducts"
             [rowHover]="true"
@@ -128,7 +128,6 @@ interface ExportColumn {
                     <td style="min-width: 12rem">{{ product.code }}</td>
                     <td style="min-width: 16rem">{{ product.name }}</td>
                     <td>
-                        <img [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image" [alt]="product.name" style="width: 64px" class="rounded" />
                     </td>
                     <td>{{ product.price | currency: 'USD' }}</td>
                     <td>{{ product.category }}</td>
@@ -136,7 +135,7 @@ interface ExportColumn {
                         <p-rating [(ngModel)]="product.rating" [readonly]="true" />
                     </td>
                     <td>
-                        <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+                    
                     </td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editProduct(product)" />
@@ -146,72 +145,13 @@ interface ExportColumn {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Product Details" [modal]="true">
-            <ng-template #content>
-                <div class="flex flex-col gap-6">
-                
-                    <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus fluid />
-                        <small class="text-red-500" *ngIf="submitted && !product.name">Name is required.</small>
-                    </div>
-                    <div>
-                        <label for="description" class="block font-bold mb-3">Description</label>
-                        <textarea id="description" pTextarea [(ngModel)]="product.description" required rows="3" cols="20" fluid></textarea>
-                    </div>
-
-                    <div>
-                        <label for="inventoryStatus" class="block font-bold mb-3">Inventory Status</label>
-        
-                    </div>
-
-                    <div>
-                        <span class="block font-bold mb-4">Category</span>
-                        <div class="grid grid-cols-12 gap-4">
-                            <div class="flex items-center gap-2 col-span-6">
-                
-                                <label for="category1">Accessories</label>
-                            </div>
-                            <div class="flex items-center gap-2 col-span-6">
-                              
-                                <label for="category2">Clothing</label>
-                            </div>
-                            <div class="flex items-center gap-2 col-span-6">
-                               
-                                <label for="category3">Electronics</label>
-                            </div>
-                            <div class="flex items-center gap-2 col-span-6">
-                                
-                                <label for="category4">Fitness</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-6">
-                            <label for="price" class="block font-bold mb-3">Price</label>
-                            
-                        </div>
-                        <div class="col-span-6">
-                            <label for="quantity" class="block font-bold mb-3">Quantity</label>
-                            
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-
-            <ng-template #footer>
-                <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveProduct()" />
-            </ng-template>
-        </p-dialog>
-
-        <p-confirmdialog [style]="{ width: '450px' }" />
+       
     `,
     providers: [MessageService, ProductService, ConfirmationService]
 })
-export class Crud implements OnInit {
-    productDialog: boolean = false;
+export class HospitalList implements OnInit {
+
+    @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
 
     products = signal<Product[]>([]);
 
@@ -221,7 +161,7 @@ export class Crud implements OnInit {
 
     submitted: boolean = false;
 
-    statuses!: any[];
+
 
     @ViewChild('dt') dt!: Table;
 
@@ -248,16 +188,10 @@ export class Crud implements OnInit {
             this.products.set(data);
         });
 
-        this.statuses = [
-            { label: 'INSTOCK', value: 'instock' },
-            { label: 'LOWSTOCK', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
-
         this.cols = [
             { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
             { field: 'name', header: 'Name' },
-            { field: 'image', header: 'Image' },
+          //  { field: 'image', header: 'Image' },
             { field: 'price', header: 'Price' },
             { field: 'category', header: 'Category' }
         ];
@@ -270,14 +204,11 @@ export class Crud implements OnInit {
     }
 
     openNew() {
-        this.product = { inventoryStatus: undefined }; // 'inventoryStatus' özelliği eklendi
-        this.submitted = false;
-        this.productDialog = true;
+        this.changeProductDialogvisibile.emit(true);
     }
 
     editProduct(product: Product) {
         this.product = { ...product };
-        this.productDialog = true;
     }
 
     deleteSelectedProducts() {
@@ -299,7 +230,6 @@ export class Crud implements OnInit {
     }
 
     hideDialog() {
-        this.productDialog = false;
         this.submitted = false;
     }
 
@@ -310,7 +240,7 @@ export class Crud implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = { inventoryStatus: undefined }; // 'inventoryStatus' özelliği eklendi
+                this.product = {};
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -342,45 +272,4 @@ export class Crud implements OnInit {
         return id;
     }
 
-    getSeverity(status: string) {
-        switch (status) {
-            case 'INSTOCK':
-                return 'success';
-            case 'LOWSTOCK':
-                return 'warn';
-            case 'OUTOFSTOCK':
-                return 'danger';
-            default:
-                return 'info';
-        }
-    }
-
-    saveProduct() {
-        this.submitted = true;
-        let _products = this.products();
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                _products[this.findIndexById(this.product.id)] = this.product;
-                this.products.set([..._products]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Updated',
-                    life: 3000
-                });
-            } else {
-                this.product.id = this.createId();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000
-                });
-                this.products.set([..._products, this.product]);
-            }
-
-            this.productDialog = false;
-            this.product = { inventoryStatus: undefined };
-        }
-    }
 }
