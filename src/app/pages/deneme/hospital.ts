@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -18,10 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product, ProductService } from '../service/product.service';
-import { HospitalAddUpdate } from './hospital_add_update';
+import { Product } from '../service/product.service';
+import { ProductService } from '../service/product.service'; 
 import { HospitalList } from './hospital_list';
-
+import { HospitalAddUpdate } from './hospital_add_update';
 
 interface Column {
     field: string;
@@ -56,16 +56,23 @@ interface ExportColumn {
     InputIconModule,
     IconFieldModule,
     ConfirmDialogModule,
-    HospitalAddUpdate,
-    HospitalList
+    HospitalList,
+    HospitalAddUpdate
 ],
-    template: `
-    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [productDialog]='productDialog'/>
-    <app-hospital-list (changeProductDialogvisibile)='changeProductDialogvisibile($event)'/>
-    
-    
 
-       
+
+    
+    template: `<app-hospital-list 
+    (changeProductDialogvisibile)='changeProductDialogvisibile($event)'/>
+
+    <!-- (editEvent)="editHospital($event)" -->
+    
+    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [productDialog]= 'productDialog'/>
+
+    <!-- [editHospitalData]="product" -->
+
+
+    
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
@@ -88,10 +95,8 @@ export class Hospital implements OnInit {
 
     cols!: Column[];
 
-    
-
     constructor(
-        private productService: ProductService,
+        @Inject(ProductService) private productService: ProductService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -105,9 +110,9 @@ export class Hospital implements OnInit {
     }
 
     loadDemoData() {
-        this.productService.getProducts().then((data) => {
-            this.products.set(data);
-        });
+        // this.productService.getProducts().then((data) => {
+        //     this.products.set(data);
+        // });
 
     
 
@@ -124,7 +129,7 @@ export class Hospital implements OnInit {
     }
 
     openNew() {
-        this.product = {};
+        this.product = { address: null, phone: null }; // 'address' ve 'phone' özellikleri eklendi
         this.submitted = false;
         this.productDialog = true;
     }
@@ -161,6 +166,9 @@ export class Hospital implements OnInit {
         this.submitted = false;
     }
 
+   
+
+
     deleteProduct(product: Product) {
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete ' + product.name + '?',
@@ -168,7 +176,7 @@ export class Hospital implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = {};
+                this.product = { address: null, phone: null }; // Initialize with required properties
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -225,7 +233,7 @@ export class Hospital implements OnInit {
             }
 
             this.productDialog = false;
-            this.product = {};
+            this.product = { address: null, phone: null }; // Initialize with required properties
         }
     }
 }

@@ -19,6 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
+import { Inject } from '@angular/core'; // Add this import
 
 interface Column {
     field: string;
@@ -150,6 +151,7 @@ interface ExportColumn {
             <ng-template #content>
                 <div class="flex flex-col gap-6">
                 
+                
                     <div>
                         <label for="name" class="block font-bold mb-3">Name</label>
                         <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus fluid />
@@ -170,17 +172,21 @@ interface ExportColumn {
                         <div class="grid grid-cols-12 gap-4">
                             <div class="flex items-center gap-2 col-span-6">
                 
+                
                                 <label for="category1">Accessories</label>
                             </div>
                             <div class="flex items-center gap-2 col-span-6">
+                              
                               
                                 <label for="category2">Clothing</label>
                             </div>
                             <div class="flex items-center gap-2 col-span-6">
                                
+                               
                                 <label for="category3">Electronics</label>
                             </div>
                             <div class="flex items-center gap-2 col-span-6">
+                                
                                 
                                 <label for="category4">Fitness</label>
                             </div>
@@ -191,9 +197,11 @@ interface ExportColumn {
                         <div class="col-span-6">
                             <label for="price" class="block font-bold mb-3">Price</label>
                             
+                            
                         </div>
                         <div class="col-span-6">
                             <label for="quantity" class="block font-bold mb-3">Quantity</label>
+                            
                             
                         </div>
                     </div>
@@ -227,26 +235,26 @@ export class Crud implements OnInit {
 
     exportColumns!: ExportColumn[];
 
-    cols!: Column[];
+        cols!: Column[];
 
-    constructor(
-        private productService: ProductService,
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService
-    ) {}
+        constructor(
+            @Inject(ProductService) private productService: ProductService, // Use @Inject decorator
+            private messageService: MessageService,
+            private confirmationService: ConfirmationService
+        ) {}
 
-    exportCSV() {
-        this.dt.exportCSV();
-    }
+        exportCSV() {
+            this.dt.exportCSV();
+        }
 
-    ngOnInit() {
-        this.loadDemoData();
-    }
+        ngOnInit() {
+            this.loadDemoData();
+        }
 
     loadDemoData() {
-        this.productService.getProducts().then((data) => {
-            this.products.set(data);
-        });
+        // this.productService.getProducts().then((data) => {
+        //     this.products.set(data);
+        // });
 
         this.statuses = [
             { label: 'INSTOCK', value: 'instock' },
@@ -310,7 +318,7 @@ export class Crud implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = { inventoryStatus: undefined }; // 'inventoryStatus' özelliği eklendi
+                this.product = { phone: '', address: '' }; // Gerekli özellikler eklendi
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -380,7 +388,7 @@ export class Crud implements OnInit {
             }
 
             this.productDialog = false;
-            this.product = { inventoryStatus: undefined };
+            this.product = { phone: '', address: '' };
         }
     }
 }
