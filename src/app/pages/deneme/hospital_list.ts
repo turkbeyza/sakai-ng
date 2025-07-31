@@ -84,7 +84,6 @@ interface ExportColumn {
 
                 <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
                 <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" />
-            </ng-template>
 
 
             <ng-template #end>
@@ -98,7 +97,7 @@ interface ExportColumn {
             [value]="products"
 
             
-            [value]="products()"
+            [value]="products"
 
             [rows]="10"
             [columns]="cols"
@@ -184,8 +183,6 @@ interface ExportColumn {
         <th style="min-width: 12rem"></th>
         </tr>
 
-                </tr>
-
             </ng-template>
             <ng-template #body let-product>
                 <tr>
@@ -259,7 +256,6 @@ hospital: any;
 
         @Inject(ProductService) private productService: ProductService,
 
-        private productService: ProductService,
 
         private messageService: MessageService,
         private confirmationService: ConfirmationService
@@ -285,10 +281,6 @@ hospital: any;
             error: (err: any) => console.log(err)
         });
           
-
-        this.productService.getProducts().then((data) => {
-            this.products.set(data);
-        });
 
 
         this.cols = [
@@ -321,13 +313,6 @@ hospital: any;
       
 
 
-     deleteSelectedProducts() {
-        debugger
-
-    editProduct(product: Product) {
-        this.product = { ...product };
-    }
-
     deleteSelectedProducts() {
 
         this.confirmationService.confirm({
@@ -349,19 +334,6 @@ hospital: any;
                     error: (err: any) => console.log(err)
                 });
                
-            }
-        });
-     }
-
-            accept: () => {
-                this.products.set(this.products().filter((val) => !this.selectedProducts?.includes(val)));
-                this.selectedProducts = null;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Products Deleted',
-                    life: 3000
-                });
             }
         });
     }
@@ -403,36 +375,10 @@ hospital: any;
 
          return index;
 
+}
+    
 
-    deleteProduct(product: Product) {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + product.name + '?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = {};
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Deleted',
-                    life: 3000
-                });
-            }
-        });
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products().length; i++) {
-            if (this.products()[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
+    
 
     createId(): string {
         let id = '';

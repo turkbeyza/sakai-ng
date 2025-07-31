@@ -105,7 +105,7 @@ export class MediaDemo implements OnInit {
 
     ngOnInit() {
         this.productService.getProductsSmall().then((products) => {
-            this.products = products;
+            this.products = [];
         });
 
         this.photoService.getImages().then((images) => {

@@ -278,7 +278,6 @@ export class Crud implements OnInit {
     }
 
     openNew() {
-        this.product = { inventoryStatus: undefined }; // 'inventoryStatus' özelliği eklendi
         this.submitted = false;
         this.productDialog = true;
     }

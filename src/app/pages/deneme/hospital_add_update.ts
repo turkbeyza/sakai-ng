@@ -118,7 +118,7 @@ interface ExportColumn {
 
     
 })
-export class HospitalAddUpdate implements OnInit, OnChanges {
+export class HospitalAddUpdate implements OnInit {
     
     @Input() productDialog: boolean = false;
 

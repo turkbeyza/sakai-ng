@@ -42,6 +42,6 @@ export class RecentSalesWidget {
     constructor(private productService: ProductService) {}
 
     ngOnInit() {
-        this.productService.getProductsSmall().then((data) => (this.products = data));
+        this.productService.getProductsSmall().then((data) => (this.products = []));
     }
 }

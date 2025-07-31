@@ -955,21 +955,7 @@ export class ProductService {
         return Promise.resolve(this.getProductsWithOrdersData().slice(0, 10));
     }
 
-    generatePrduct(): Product {
-        const product: Product = {
-            id: this.generateId(),
-            name: this.generateName(),
-            description: 'Product Description',
-            price: this.generatePrice(),
-            quantity: this.generateQuantity(),
-            category: 'Product Category',
-            inventoryStatus: this.generateStatus(),
-            rating: this.generateRating()
-        };
-
-        product.image = product.name?.toLocaleLowerCase().split(/[ ,]+/).join('-') + '.jpg';
-        return product;
-    }
+    
 
     generateId() {
         let text = '';
