@@ -225,6 +225,7 @@ onSubmit() {
         // this.exampleForm.markAllAsTouched();
         
             if (this.exampleForm.valid) {
+                
                 const formData = this.exampleForm.value;
         
                 // Güncellenmiş product objesini oluştur
@@ -236,6 +237,7 @@ onSubmit() {
                 };
         
                 if (this.product?.id) {
+                    
                     // Güncelleme işlemi
                     this.productService.updateHospital(hospital).subscribe({
                         next: () => {
@@ -255,9 +257,11 @@ onSubmit() {
                         }
                     });
                 } else {
+                    
                     // Yeni ekleme işlemi
                     this.productService.addHospital(hospital).subscribe({
                         next: () => {
+                            
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Added',
@@ -283,8 +287,11 @@ onSubmit() {
                 });
             }
         }
+
+
     closeDialog() {
-        throw new Error('Method not implemented.');
+        
+        this.changeProductDialogvisibile.emit(false)
     }
     
     openNew() {
