@@ -63,6 +63,13 @@ interface ExportColumn {
                 
                 <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
                 <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProduct" />
+                <p-button icon="pi pi-pencil"
+                      class="mr-2"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (click)="editProduct(product)">
+            </p-button>
+
             </ng-template>
 
             
@@ -82,8 +89,8 @@ interface ExportColumn {
 
 
 
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" />
+                <!-- <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+                <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" /> -->
 
 
             <ng-template #end>
@@ -134,7 +141,7 @@ interface ExportColumn {
                         <p-tableHeaderCheckbox />
                     </th>
 
-                    <th style="min-width: 16rem">Code</th>
+                    <!-- <th style="min-width: 16rem">Code</th> -->
 
                     <th pSortableColumn="name" style="min-width:16rem">
                         Name
@@ -176,11 +183,12 @@ interface ExportColumn {
         <!-- <th style="min-width: 12rem"></th> 
     </tr> -->
     
-    <th pSortableColumn="address" style="min-width: 16rem">
+    <th pSortableColumn="address" style="width: 100%">
             Address
             <p-sortIcon field="address" />
         </th>
-        <th style="min-width: 12rem"></th>
+        <th style="min-width: 12rem " > Actions </th>
+
         </tr>
 
             </ng-template>
@@ -193,22 +201,22 @@ interface ExportColumn {
                     <td style="min-width: 16rem">{{ product.name }}</td>
                     <td>{{ product.phone }}</td>
                     <td>{{ product.address }}</td>
-                    <td>
-                    <button pButton icon="pi pi-trash" (click)="deleteProduct(product)"></button>
+                    <!-- <td> -->
+                    <!-- <button pButton icon="pi pi-trash" (click)="deleteProduct(product)"></button> -->
 
 
-                    <td style="min-width: 12rem">{{ product.code }}</td>
-                    <td style="min-width: 16rem">{{ product.name }}</td>
-                    <td>
-                    </td>
-                    <td>{{ product.price | currency: 'USD' }}</td>
+                    <!-- <td style="min-width: 12rem">{{ product.code }}</td> -->
+                    <!-- <td style="min-width: 16rem">{{ product.name }}</td> -->
+                    <!-- <td> -->
+                    <!-- </td> -->
+                    <!-- <td>{{ product.price | currency: 'USD' }}</td>
                     <td>{{ product.category }}</td>
-                    <td>
-                        <p-rating [(ngModel)]="product.rating" [readonly]="true" />
-                    </td>
-                    <td>
+                    <td> -->
+                        <!-- <p-rating [(ngModel)]="product.rating" [readonly]="true" /> -->
+                    <!-- </td> -->
+                    <!-- <td>
                     
-                    </td>
+                    </td> -->
                     <td>
 
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editProduct(product)" />
@@ -269,6 +277,13 @@ hospital: any;
         this.loadDemoData();
     }
 
+
+    loadHospitals(): void {
+        this.productService.getHospitals().subscribe(data => {
+          this.hospital = data;
+        });
+      }
+
     loadDemoData() {
 
        // debugger
@@ -284,10 +299,10 @@ hospital: any;
 
 
         this.cols = [
-            { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
-            { field: 'name', header: 'Name' },
-          //  { field: 'image', header: 'Image' },
-            { field: 'price', header: 'Price' },
+             { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
+             { field: 'name', header: 'Name' },
+        //   //  { field: 'image', header: 'Image' },
+             { field: 'price', header: 'Price' },
             { field: 'category', header: 'Category' }
         ];
 
@@ -300,6 +315,8 @@ hospital: any;
 
     openNew() {
         this.changeProductDialogvisibile.emit(true);
+        this.loadDemoData();
+        
     }
 
 
@@ -308,7 +325,8 @@ hospital: any;
     // }
 
     editProduct(product: Product) {
-        this.editEvent.emit(product); // parent component'e hastane gönder
+        this.editEvent.emit(product); 
+        
       }
       
 
@@ -324,16 +342,19 @@ hospital: any;
                 debugger
                 this.productService.deleteHospital(this.selectedProduct[0].id).subscribe({
                     next: (data: any) => {
+                        // this.loadDemoData();
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Successful',
                             detail: 'Products Deleted',
                             life: 3000
                         });
+                          this.loadDemoData();
+                          this.selectedProduct=[];
                     },
                     error: (err: any) => console.log(err)
                 });
-               
+                
             }
         });
     }

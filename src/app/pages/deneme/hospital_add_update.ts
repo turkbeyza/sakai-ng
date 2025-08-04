@@ -127,6 +127,9 @@ export class HospitalAddUpdate implements OnInit {
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
 
+    @Output() hospitalSaved = new EventEmitter<void>();
+
+
    // @Output() deleteProductEvent = new EventEmitter<Product>();
     
 
@@ -140,7 +143,7 @@ export class HospitalAddUpdate implements OnInit {
     exportColumns!: ExportColumn[];
 
     cols!: Column[];
-exampleForm: any;
+    exampleForm: any;
     dialog: boolean | undefined;
 
 //exampleForm!: FormGroup;
@@ -174,6 +177,7 @@ exampleForm: any;
                 phone: this.editHospitalData.phone
               });
               this.product = { ...this.editHospitalData };
+              
             }
           }
              
@@ -246,6 +250,7 @@ onSubmit() {
                                 summary: 'Updated',
                                 detail: 'Hospital updated successfully'
                             });
+                            this.hospitalSaved.emit();
                             this.closeDialog();
                         },
                         error: () => {
@@ -267,7 +272,9 @@ onSubmit() {
                                 summary: 'Added',
                                 detail: 'Hospital added successfully'
                             });
+                            this.hospitalSaved.emit(); 
                             this.closeDialog();
+                            this.exampleForm.reset(); // Formu sıfırla
                         },
                         error: () => {
                             this.messageService.add({
@@ -359,6 +366,7 @@ editHospital(hospital: Product) {
 
             this.productDialog = false;
             this.product = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
+
         }
     }
 }

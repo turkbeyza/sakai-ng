@@ -67,7 +67,8 @@ interface ExportColumn {
 
     <!-- (editEvent)="editHospital($event)" -->
     
-    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [productDialog]= 'productDialog'/>
+    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [productDialog]= 'productDialog'
+    (hospitalSaved)="onHospitalSaved()"  />
 
     <!-- [editHospitalData]="product" -->
 
@@ -90,6 +91,8 @@ export class Hospital implements OnInit {
     submitted: boolean = false;
 
     @ViewChild('dt') dt!: Table;
+
+    @ViewChild(HospitalList) hospitallist!: HospitalList;
 
     exportColumns!: ExportColumn[];
 
@@ -133,6 +136,14 @@ export class Hospital implements OnInit {
         this.submitted = false;
         this.productDialog = true;
     }
+
+
+    onHospitalSaved() {
+        debugger
+        this.hospitallist.loadDemoData();
+        this.productDialog = false; 
+      }
+      
 
     editProduct(product: Product) {
         this.product = { ...product };

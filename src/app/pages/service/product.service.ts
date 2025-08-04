@@ -33,6 +33,7 @@ export class ProductService {
     httpClient: any;
 
 
+    
     getHospitals() {
         Observable<any> 
         return this.http.get('http://localhost:5077/api/Hospital');
@@ -48,7 +49,9 @@ export class ProductService {
 
       updateHospital(hospital: Product): Observable<any> {
         return this.http.put(`http://localhost:5077/api/Hospital/${hospital.id}`, hospital);
+        
       }      
+    
       
       
     apiUrl(apiUrl: any): Observable<any> {
