@@ -63,12 +63,7 @@ interface ExportColumn {
                 
                 <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
                 <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProduct" />
-                <p-button icon="pi pi-pencil"
-                      class="mr-2"
-                      [rounded]="true"
-                      [outlined]="true"
-                      (click)="editProduct(product)">
-            </p-button>
+            
 
             </ng-template>
 
@@ -187,7 +182,7 @@ interface ExportColumn {
             Address
             <p-sortIcon field="address" />
         </th>
-        <th style="min-width: 12rem " > Actions </th>
+        <th style="min-width: 12rem " > Edit </th>
 
         </tr>
 
@@ -220,16 +215,84 @@ interface ExportColumn {
                     <td>
 
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editProduct(product)" />
-                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteProduct(product)" />
+                        <!-- <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteProduct(product)" /> -->
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+        <!-- <p-dialog 
+            [(visible)]="editDialogVisible" 
+            [style]="{ width: '450px' }" 
+            header="Edit Hospital" 
+            [modal]="true" 
+            class="p-fluid">
+            
+            <ng-template #content>
+                <div class="field">
+                    <label for="name">Name</label>
+                    <input 
+                        pInputText 
+                        id="name" 
+                        [(ngModel)]="editProduct.name" 
+                        required 
+                        autofocus 
+                        [class.ng-invalid.ng-dirty]="submitted && !editProduct.name" />
+                    <small class="p-error" *ngIf="submitted && !editProduct.name">Name is required.</small>
+                </div>
 
+        <p-confirmdialog [style]="{ width: '450px' }" /> -->
+        <p-dialog 
+    [(visible)]="editDialogVisible" 
+    [style]="{ width: '450px' }" 
+    header="Edit Hospital" 
+    [modal]="true" 
+    class="p-fluid"
+>
+    <ng-template #content>
+        <div class="field">
+            <label for="name">Name</label>
+            <input 
+                pInputText 
+                id="name" 
+                [(ngModel)]="editingProduct.name" 
+                required 
+                autofocus 
+                [class.ng-invalid.ng-dirty]="submitted && !editingProduct.name" 
+            />
+            <small class="p-error" *ngIf="submitted && !editingProduct.name">Name is required.</small>
+        </div>
 
-        <p-confirmdialog [style]="{ width: '450px' }" />
+        <div class="field">
+            <label for="phone">Phone</label>
+            <input 
+                pInputText 
+                id="phone" 
+                [(ngModel)]="editingProduct.phone" 
+                required 
+                [class.ng-invalid.ng-dirty]="submitted && !editingProduct.phone" 
+            />
+            <small class="p-error" *ngIf="submitted && !editingProduct.phone">Phone is required.</small>
+        </div>
 
-       
+        <div class="field">
+            <label for="address">Address</label>
+            <input 
+                pInputText 
+                id="address" 
+                [(ngModel)]="editingProduct.address" 
+                required 
+                [class.ng-invalid.ng-dirty]="submitted && !editingProduct.address" 
+            />
+            <small class="p-error" *ngIf="submitted && !editingProduct.address">Address is required.</small>
+        </div>
+
+        <div class="flex justify-content-end mt-4">
+            <button pButton label="Cancel" icon="pi pi-times" (click)="hideEditDialog()" class="p-button-text"></button>
+            <button pButton label="Save" icon="pi pi-check" (click)="saveProduct()"></button>
+        </div>
+    </ng-template>
+</p-dialog>
+<p-confirmdialog [style]="{ width: '450px' }" />
     `,
     providers: [MessageService, ProductService, ConfirmationService]
 })
@@ -254,7 +317,11 @@ hospital: any;
 
     submitted: boolean = false;
 
+    editDialogVisible: boolean = false;
+    editingProduct: any = {};
+
     @ViewChild('dt') dt!: Table;
+
 
     exportColumns!: ExportColumn[];
 
@@ -324,15 +391,93 @@ hospital: any;
     //     this.product = { ...product };
     // }
 
-    editProduct(product: Product) {
-        this.editEvent.emit(product); 
+      // EDIT FONKSIYONU - DÜZELTİLDİ
+      editProduct(product: any) {
+        console.log('editProduct called with:', product);
         
-      }
-      
+        // Null/undefined kontrolü
+        if (!product) {
+            console.error('Product is undefined or null');
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'No hospital selected',
+                life: 3000
+            });
+            return;
+        }
+        
+        // Seçilen hastahanenin tüm bilgilerini kopyala
+        this.editingProduct = {
+            id: product.id || '',
+            name: product.name || '',
+            phone: product.phone || '',
+            address: product.address || ''
+        };
+        
+        console.log('Editing product:', this.editingProduct);
+        
+        this.editDialogVisible = true;
+        this.submitted = false;
+    }
+
+    // YENİ FONKSIYONLAR
+    hideEditDialog() {
+        this.editDialogVisible = false;
+        this.submitted = false;
+        this.editingProduct = {
+            id: '',
+            name: '',
+            phone: '',
+            address: ''
+        };
+    }
+
+   
+    saveProduct() {
+        debugger
+        this.submitted = true;
+
+        // Validasyon kontrolü
+        if (!this.editingProduct.name || !this.editingProduct.phone || !this.editingProduct.address) {
+            return;
+        }
+
+        console.log('Saving product:', this.editingProduct);
+
+        // API çağrısı - ProductService'te updateHospital metodu olmalı
+        this.productService.updateHospital(this.editingProduct).subscribe({
+            next: (data: any) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Hospital Updated',
+                    life: 3000
+                });
+                this.loadDemoData(); // Listeyi yenile
+                this.hideEditDialog();
+                this.selectedProduct=[]; // Dialog'u kapat
+            },
+            error: (err: any) => {
+                console.log(err);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to update hospital',
+                    life: 3000
+                });
+            }
+        });
+    }
+
+
+
 
 
     deleteSelectedProducts() {
 
+
+        debugger
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete the selected products?',
             header: 'Confirm',
@@ -365,6 +510,10 @@ hospital: any;
     }
 
     @Output() deleteProductEvent = new EventEmitter<Product>();
+
+
+
+
 
 
     deleteProduct(product: Product) {

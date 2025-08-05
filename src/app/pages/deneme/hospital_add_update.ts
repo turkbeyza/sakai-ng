@@ -189,6 +189,7 @@ export class HospitalAddUpdate implements OnInit {
       
 
 onSubmit() {
+    debugger
     // if (this.exampleForm.valid) {
     //     const formData = this.exampleForm.value;
 
@@ -243,6 +244,7 @@ onSubmit() {
                 if (this.product?.id) {
                     
                     // Güncelleme işlemi
+                    debugger
                     this.productService.updateHospital(hospital).subscribe({
                         next: () => {
                             this.messageService.add({

@@ -987,6 +987,11 @@ export class ProductService {
         return this.status[Math.floor(Math.random() * Math.floor(3))];
     }
 
+    updateHospitalById(id: string, hospital: Product): Observable<any> {
+        // Eğer diğer metodlarınızda da özel header yoksa:
+        return this.http.put(`${this.apiUrl}/hospitals/${id}`, hospital);
+    }
+
     generateRating() {
         return Math.floor(Math.random() * Math.floor(5) + 1);
     }
