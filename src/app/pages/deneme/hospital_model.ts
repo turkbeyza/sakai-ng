@@ -18,13 +18,13 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product as ProductModel, ProductService } from '../service/product.service';
+import { Hospital as ProductModel, HospitalService } from '../service/hospital.service';
 import { HospitalAddUpdate } from './hospital_add_update';
 import { HospitalList } from './hospital_list';
 
 
 
-export interface Product {
+export interface Hospital {
     id?: string;
     code?: string;
     name?: string;

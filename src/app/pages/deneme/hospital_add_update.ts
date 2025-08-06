@@ -18,9 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product } from '../service/product.service';
-import { ProductService } from '../service/product.service'; 
 import { Message } from "primeng/message";
+import { OnChanges, SimpleChanges } from '@angular/core';
+import { HospitalModel, HospitalService } from '../service/hospital.service';
+
 // import { FloatLabel } from "primeng/floatlabel";
 
 interface Column {
@@ -63,7 +64,7 @@ interface ExportColumn {
     template: `
 
 
-<p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Add Hospital" [modal]="true" (onHide)='hideDialog()'>
+<p-dialog [(visible)]="hospitalDialog" [style]="{ width: '450px' }" header="Add Hospital" [modal]="true" (onHide)='hideDialog()'>
 
  <form [formGroup]="exampleForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full sm:w-56">
     <div class="flex flex-col gap-1">
@@ -113,27 +114,27 @@ interface ExportColumn {
             </ng-template>
         </p-dialog>
     `,
-    providers: [MessageService, ProductService, ConfirmationService]
+    providers: [MessageService, HospitalService, ConfirmationService]
 
 
     
 })
-export class HospitalAddUpdate implements OnInit {
+export class HospitalAddUpdate implements OnInit, OnChanges {
     
-    @Input() productDialog: boolean = false;
+    @Input() hospitalDialog: boolean = false;
 
     
-    @Input() editHospitalData!: Product;
+    @Input() editHospitalData!: HospitalModel;
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
 
     @Output() hospitalSaved = new EventEmitter<void>();
 
 
-   // @Output() deleteProductEvent = new EventEmitter<Product>();
+   // @Output() deleteProductEvent = new EventEmitter<Hospital>();
     
 
-    product!: Product;
+    hospital!: HospitalModel;
 
     submitted: boolean = false;
 
@@ -150,7 +151,7 @@ export class HospitalAddUpdate implements OnInit {
 
 
     constructor(
-        private productService: ProductService,
+        private hospitalService: HospitalService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private fb: FormBuilder
@@ -169,17 +170,33 @@ export class HospitalAddUpdate implements OnInit {
             });
           }
 
-          ngOnChanges(): void {
-            if (this.editHospitalData) {
+          ngOnChanges(changes: SimpleChanges): void {
+            if (changes['editHospitalData'] && this.editHospitalData) {
+                
               this.exampleForm.patchValue({
                 Name: this.editHospitalData.name,
                 address: this.editHospitalData.address,
                 phone: this.editHospitalData.phone
               });
-              this.product = { ...this.editHospitalData };
-              
+              this.hospital = { ...this.editHospitalData }; // update mode
+            } else {
+              this.hospital = {
+                id: '',
+                name: '',
+                address: '',
+                phone: '',
+                code: '',
+                description: '',
+                price: 0,
+                category: '',
+                quantity: 0,
+                inventoryStatus: '',
+                rating: 0
+              };
+              this.exampleForm.reset(); // add mode
             }
           }
+          
              
 
     isInvalid(controlName: string): boolean {
@@ -189,12 +206,12 @@ export class HospitalAddUpdate implements OnInit {
       
 
 onSubmit() {
-    debugger
+    
     // if (this.exampleForm.valid) {
     //     const formData = this.exampleForm.value;
 
     //     const hospital = this.exampleForm.value; // Define the hospital variable
-    //     this.productService.addHospital(hospital).subscribe({
+    //     this.hospitalService.addHospital(hospital).subscribe({
     //         next: () => {
     //             this.messageService.add({
     //                 severity: 'success', 
@@ -233,19 +250,19 @@ onSubmit() {
                 
                 const formData = this.exampleForm.value;
         
-                // Güncellenmiş product objesini oluştur
-                const hospital: Product = {
-                    ...this.product,
+                // Güncellenmiş hospital objesini oluştur
+                const hospital: HospitalModel = {
+                    ...this.hospital,
                     name: formData.Name,
                     address: formData.address,
                     phone: formData.phone
                 };
         
-                if (this.product?.id) {
+                if (this.hospital?.id) {
                     
                     // Güncelleme işlemi
-                    debugger
-                    this.productService.updateHospital(hospital).subscribe({
+                    
+                    this.hospitalService.updateHospital(hospital).subscribe({
                         next: () => {
                             this.messageService.add({
                                 severity: 'success',
@@ -266,7 +283,7 @@ onSubmit() {
                 } else {
                     
                     // Yeni ekleme işlemi
-                    this.productService.addHospital(hospital).subscribe({
+                    this.hospitalService.addHospital(hospital).subscribe({
                         next: () => {
                             
                             this.messageService.add({
@@ -304,19 +321,19 @@ onSubmit() {
     }
     
     openNew() {
-        this.product = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
+        this.hospital = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
         this.submitted = false;
-        this.productDialog = true;
+        this.hospitalDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
-    }
+    // editHospital(hospital: Hospital) {
+    //     this.hospital = { ...hospital };
+    //     this.hospitalDialog = true;
+    // }
 
-editHospital(hospital: Product) {
-  this.product = { ...hospital };  // referans kopyalamadan kaçınmak için spread
-  this.productDialog = true;
+editHospital(hospital: HospitalModel) {
+  this.hospital = { ...hospital };  // referans kopyalamadan kaçınmak için spread
+  this.hospitalDialog = true;
 
   this.exampleForm.patchValue({
     Name: hospital.name,
@@ -344,30 +361,30 @@ editHospital(hospital: Product) {
 
     saveProduct() {
         this.submitted = true;
-        //let _products = this.products();
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-               // _products[this.findIndexById(this.product.id)] = this.product;
-                //this.products.set([..._products]);
+        //let _products = this.hospitals();
+        if (this.hospital.name?.trim()) {
+            if (this.hospital.id) {
+               // _products[this.findIndexById(this.hospital.id)] = this.hospital;
+                //this.hospitals.set([..._products]);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Updated',
+                    detail: 'Hospital Updated',
                     life: 3000
                 });
             } else {
-                this.product.id = this.createId();
+                this.hospital.id = this.createId();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Created',
+                    detail: 'Hospital Created',
                     life: 3000
                 });
-               // this.products.set([..._products, this.product]);
+               // this.hospitals.set([..._products, this.hospital]);
             }
 
-            this.productDialog = false;
-            this.product = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
+            this.hospitalDialog = false;
+            this.hospital = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
 
         }
     }

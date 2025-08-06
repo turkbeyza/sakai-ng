@@ -18,10 +18,9 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product } from '../service/product.service';
-import { ProductService } from '../service/product.service'; 
 import { HospitalList } from './hospital_list';
 import { HospitalAddUpdate } from './hospital_add_update';
+import { HospitalModel, HospitalService } from '../service/hospital.service';
 
 interface Column {
     field: string;
@@ -63,30 +62,27 @@ interface ExportColumn {
 
     
     template: `<app-hospital-list 
-    (changeProductDialogvisibile)='changeProductDialogvisibile($event)'/>
+    (changeProductDialogvisibile)='changeProductDialogvisibile($event)' (editEvent)='editEvent($event)' />
 
     <!-- (editEvent)="editHospital($event)" -->
     
-    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [productDialog]= 'productDialog'
-    (hospitalSaved)="onHospitalSaved()"  />
+    <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [hospitalDialog]= 'hospitalDialog'
+    (hospitalSaved)="onHospitalSaved()" [editHospitalData] = 'editHospitalData'  />
 
-    <!-- [editHospitalData]="product" -->
-
-
-    
+    <!-- [editHospitalData]="hospital" -->
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, ProductService, ConfirmationService]
+    providers: [MessageService, HospitalService, ConfirmationService]
 })
 export class Hospital implements OnInit {
-    productDialog: boolean = false;
+    hospitalDialog: boolean = false;
 
-    products = signal<Product[]>([]);
+    hospitals = signal<HospitalModel[]>([]);
 
-    product!: Product;
+    hospital!: HospitalModel;
 
-    selectedProducts!: Product[] | null;
+    selectedProducts!: HospitalModel[] | null;
 
     submitted: boolean = false;
 
@@ -98,12 +94,17 @@ export class Hospital implements OnInit {
 
     cols!: Column[];
 
+    editHospitalData!:HospitalModel
+
     constructor(
-        @Inject(ProductService) private productService: ProductService,
+        @Inject(HospitalService) private hospitalService: HospitalService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
+    editEvent(hospital: HospitalModel){
+        this.editHospitalData=hospital
+    }
     exportCSV() {
         this.dt.exportCSV();
     }
@@ -113,14 +114,14 @@ export class Hospital implements OnInit {
     }
 
     loadDemoData() {
-        // this.productService.getProducts().then((data) => {
-        //     this.products.set(data);
+        // this.hospitalService.getProducts().then((data) => {
+        //     this.hospitals.set(data);
         // });
 
     
 
         this.cols = [
-            { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
+            { field: 'code', header: 'Code', customExportHeader: 'Hospital Code' },
             { field: 'name', header: 'Name' },
         ];
 
@@ -132,31 +133,31 @@ export class Hospital implements OnInit {
     }
 
     openNew() {
-        this.product = { address: null, phone: null }; // 'address' ve 'phone' özellikleri eklendi
+        this.hospital = { address: null, phone: null }; // 'address' ve 'phone' özellikleri eklendi
         this.submitted = false;
-        this.productDialog = true;
+        this.hospitalDialog = true;
     }
 
 
     onHospitalSaved() {
-        debugger
+        
         this.hospitallist.loadDemoData();
-        this.productDialog = false; 
+        this.hospitalDialog = false; 
       }
       
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editHospital(hospital: HospitalModel) {
+        this.hospital = { ...hospital };
+        this.hospitalDialog = true;
     }
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected products?',
+            message: 'Are you sure you want to delete the selected hospitals?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.products.set(this.products().filter((val) => !this.selectedProducts?.includes(val)));
+                this.hospitals.set(this.hospitals().filter((val) => !this.selectedProducts?.includes(val)));
                 this.selectedProducts = null;
                 this.messageService.add({
                     severity: 'success',
@@ -169,29 +170,29 @@ export class Hospital implements OnInit {
     }
 
     changeProductDialogvisibile(visible:boolean) {
-        this.productDialog = visible;
+        this.hospitalDialog = visible;
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.hospitalDialog = false;
         this.submitted = false;
     }
 
    
 
 
-    deleteProduct(product: Product) {
+    deleteProduct(hospital: HospitalModel) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + product.name + '?',
+            message: 'Are you sure you want to delete ' + hospital.name + '?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = { address: null, phone: null }; // Initialize with required properties
+                this.hospitals.set(this.hospitals().filter((val) => val.id !== hospital.id));
+                this.hospital = { address: null, phone: null }; // Initialize with required properties
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Deleted',
+                    detail: 'Hospital Deleted',
                     life: 3000
                 });
             }
@@ -200,8 +201,8 @@ export class Hospital implements OnInit {
 
     findIndexById(id: string): number {
         let index = -1;
-        for (let i = 0; i < this.products().length; i++) {
-            if (this.products()[i].id === id) {
+        for (let i = 0; i < this.hospitals().length; i++) {
+            if (this.hospitals()[i].id === id) {
                 index = i;
                 break;
             }
@@ -221,30 +222,30 @@ export class Hospital implements OnInit {
 
     saveProduct() {
         this.submitted = true;
-        let _products = this.products();
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                _products[this.findIndexById(this.product.id)] = this.product;
-                this.products.set([..._products]);
+        let _products = this.hospitals();
+        if (this.hospital.name?.trim()) {
+            if (this.hospital.id) {
+                _products[this.findIndexById(this.hospital.id)] = this.hospital;
+                this.hospitals.set([..._products]);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Updated',
+                    detail: 'Hospital Updated',
                     life: 3000
                 });
             } else {
-                this.product.id = this.createId();
+                this.hospital.id = this.createId();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Created',
+                    detail: 'Hospital Created',
                     life: 3000
                 });
-                this.products.set([..._products, this.product]);
+                this.hospitals.set([..._products, this.hospital]);
             }
 
-            this.productDialog = false;
-            this.product = { address: null, phone: null }; // Initialize with required properties
+            this.hospitalDialog = false;
+            this.hospital = { address: null, phone: null }; // Initialize with required properties
         }
     }
 }

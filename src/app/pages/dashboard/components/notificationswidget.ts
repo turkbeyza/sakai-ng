@@ -51,7 +51,7 @@ import { MenuModule } from 'primeng/menu';
                 </div>
                 <span class="text-surface-900 dark:text-surface-0 leading-normal"
                     >Jane Davis
-                    <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your product.</span>
+                    <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your hospital.</span>
                 </span>
             </li>
         </ul>
@@ -67,7 +67,7 @@ import { MenuModule } from 'primeng/menu';
                 <div class="w-12 h-12 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-full mr-4 shrink-0">
                     <i class="pi pi-heart text-xl! text-purple-500"></i>
                 </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your products to their wishlist.</span>
+                <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your hospitals to their wishlist.</span>
             </li>
         </ul>
     </div>`

@@ -38,7 +38,7 @@ export class NodeService {
                 icon: 'pi pi-fw pi-calendar',
                 children: [
                     { key: '1-0', label: 'Meeting', icon: 'pi pi-fw pi-calendar-plus', data: 'Meeting' },
-                    { key: '1-1', label: 'Product Launch', icon: 'pi pi-fw pi-calendar-plus', data: 'Product Launch' },
+                    { key: '1-1', label: 'Hospital Launch', icon: 'pi pi-fw pi-calendar-plus', data: 'Hospital Launch' },
                     { key: '1-2', label: 'Report Review', icon: 'pi pi-fw pi-calendar-plus', data: 'Report Review' }
                 ]
             },
