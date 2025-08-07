@@ -18,7 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { HospitalModel, HospitalService } from '../service/hospital.service';
+import { HospitalService } from '../service/hospital.service';
+import { HospitalModel } from './hospital_model';
 
 
 

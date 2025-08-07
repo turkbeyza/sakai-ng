@@ -20,7 +20,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HospitalList } from './hospital_list';
 import { HospitalAddUpdate } from './hospital_add_update';
-import { HospitalModel, HospitalService } from '../service/hospital.service';
+import { HospitalService } from '../service/hospital.service';
+import { HospitalModel } from './hospital_model';
 
 interface Column {
     field: string;

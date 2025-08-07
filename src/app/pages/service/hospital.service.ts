@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { HospitalModel } from '../deneme/hospital_model';
 
 
 interface InventoryStatus {
@@ -8,12 +9,6 @@ interface InventoryStatus {
     value: string;
 }
 
-export class HospitalModel {
-    phone: any;
-    address: any;
-    id?: string;
-    name?: string;
-}
 
 @Injectable({
     providedIn: 'root' 

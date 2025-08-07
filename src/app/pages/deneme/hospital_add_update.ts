@@ -20,7 +20,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Message } from "primeng/message";
 import { OnChanges, SimpleChanges } from '@angular/core';
-import { HospitalModel, HospitalService } from '../service/hospital.service';
+import {HospitalService } from '../service/hospital.service';
+import { HospitalModel } from './hospital_model';
 
 interface Column {
     field: string;
@@ -274,7 +275,7 @@ editHospital(hospital: HospitalModel) {
 
     hideDialog() {
         this.changeProductDialogvisibile.emit(false)
-        
+
     }
 
     createId(): string {
