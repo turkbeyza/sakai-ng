@@ -83,8 +83,6 @@ interface ExportColumn {
   </ng-template>
 
 
-
-
             <ng-template #end>
                 <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
             </ng-template>
@@ -99,7 +97,7 @@ interface ExportColumn {
             [value]="hospitals"
 
             [rows]="10"
-            [columns]="cols"
+            
             [paginator]="true"
             [globalFilterFields]="['name', 'country.name', 'representative.name']"
             [tableStyle]="{ 'min-width': '75rem' }"
@@ -164,7 +162,6 @@ interface ExportColumn {
                     <td>{{ hospital.phone }}</td>
                     <td>{{ hospital.address }}</td>
                     <td>
-
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editHospital(hospital)" />
                     </td>
                 </tr>
@@ -187,8 +184,6 @@ hospital: any;
 
     hospitals: any[] = [];
 
-    
-
     selectedProduct!: HospitalModel[];
 
     selectedProducts!: HospitalModel[] | null;
@@ -200,15 +195,9 @@ hospital: any;
     @ViewChild('dt') dt!: Table;
 
 
-    exportColumns!: ExportColumn[];
-
-    cols!: Column[];
-
     constructor(
 
         @Inject(HospitalService) private hospitalService: HospitalService,
-
-
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -221,7 +210,6 @@ hospital: any;
         this.loadDemoData();
     }
 
-
     loadHospitals(): void {
         this.hospitalService.getHospitals().subscribe(data => {
           this.hospital = data;
@@ -229,8 +217,6 @@ hospital: any;
       }
 
     loadDemoData() {
-
-       
         this.hospitalService.getHospitals().subscribe({
             next: (data: any) => {
                 this.hospitals = data;
@@ -238,18 +224,6 @@ hospital: any;
             },
             error: (err: any) => console.log(err)
         });
-          
-
-
-        this.cols = [
-        //      { field: 'code', header: 'Code', customExportHeader: 'Hospital Code' },
-        //      { field: 'name', header: 'Name' },
-        // //   //  { field: 'image', header: 'Image' },
-        //      { field: 'price', header: 'Price' },
-        //     { field: 'category', header: 'Category' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -258,23 +232,18 @@ hospital: any;
 
     openNew() {
         this.changeProductDialogvisibile.emit(true);
-        this.loadDemoData();
-        
+        this.loadDemoData();  
     }
 
 
-    editHospital(hospital: any) {
-        
-        this.editEvent.emit(hospital);  // Edit modunda hospital gönderiyoruz
-        this.changeProductDialogvisibile.emit(true); // Dialogu aç
+    editHospital(hospital: any) { 
+        this.editEvent.emit(hospital);  
+        this.changeProductDialogvisibile.emit(true); 
       }
       
 
 
     deleteSelectedProducts() {
-
-
-        
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete the selected hospitals?',
             header: 'Confirm',
@@ -309,29 +278,7 @@ hospital: any;
     @Output() deleteProductEvent = new EventEmitter<HospitalModel>();
 
 
-
-
-
-
     deleteProduct(hospital: HospitalModel) {
-    }
-
-    findIndexById(id: string): number {
-         let index = -1;
-         return index;
-
-}
-    
-
-    
-
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
 }

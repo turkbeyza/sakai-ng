@@ -22,8 +22,6 @@ import { Message } from "primeng/message";
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { HospitalModel, HospitalService } from '../service/hospital.service';
 
-// import { FloatLabel } from "primeng/floatlabel";
-
 interface Column {
     field: string;
     header: string;
@@ -98,19 +96,11 @@ interface ExportColumn {
 
     </div>
 
-   
-    <!-- <button pButton severity="secondary" type="submit"><span pButtonLabel>Add</span></button> -->
-
-
   <button pButton type="save" icon="pi pi-check" label="Save"></button>
 </form> 
 
-
-
            
             <ng-template #footer>
-               <!-- <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveProduct()" /> -->
             </ng-template>
         </p-dialog>
     `,
@@ -122,17 +112,11 @@ interface ExportColumn {
 export class HospitalAddUpdate implements OnInit, OnChanges {
     
     @Input() hospitalDialog: boolean = false;
-
-    
     @Input() editHospitalData!: HospitalModel;
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-
     @Output() hospitalSaved = new EventEmitter<void>();
 
-
-   // @Output() deleteProductEvent = new EventEmitter<Hospital>();
-    
 
     hospital!: HospitalModel;
 
@@ -146,8 +130,6 @@ export class HospitalAddUpdate implements OnInit, OnChanges {
     cols!: Column[];
     exampleForm: any;
     dialog: boolean | undefined;
-
-//exampleForm!: FormGroup;
 
 
     constructor(
@@ -171,31 +153,27 @@ export class HospitalAddUpdate implements OnInit, OnChanges {
           }
 
           ngOnChanges(changes: SimpleChanges): void {
-            if (changes['editHospitalData'] && this.editHospitalData) {
-                
-              this.exampleForm.patchValue({
-                Name: this.editHospitalData.name,
-                address: this.editHospitalData.address,
-                phone: this.editHospitalData.phone
-              });
-              this.hospital = { ...this.editHospitalData }; // update mode
-            } else {
-              this.hospital = {
-                id: '',
-                name: '',
-                address: '',
-                phone: '',
-                code: '',
-                description: '',
-                price: 0,
-                category: '',
-                quantity: 0,
-                inventoryStatus: '',
-                rating: 0
-              };
-              this.exampleForm.reset(); // add mode
-            }
+            if (changes['hospitalDialog'] && changes['hospitalDialog'].currentValue) {
+                debugger
+   if (this.editHospitalData) {
+    this.exampleForm.patchValue({
+        Name: this.editHospitalData.name,
+        address: this.editHospitalData.address,
+        phone: this.editHospitalData.phone
+      });
+      this.hospital = { ...this.editHospitalData }; // update mode
+} else {
+    this.hospital = {
+      id: '',
+      name: '',
+      address: '',
+      phone: '',
+    };
+    this.exampleForm.reset(); // add mode
+
+            } 
           }
+        }
           
              
 
@@ -206,51 +184,11 @@ export class HospitalAddUpdate implements OnInit, OnChanges {
       
 
 onSubmit() {
-    
-    // if (this.exampleForm.valid) {
-    //     const formData = this.exampleForm.value;
-
-    //     const hospital = this.exampleForm.value; // Define the hospital variable
-    //     this.hospitalService.addHospital(hospital).subscribe({
-    //         next: () => {
-    //             this.messageService.add({
-    //                 severity: 'success', 
-    //                 summary: 'Success',
-    //                 detail: 'Hospital added successfully'
-    //             });
-    //             this.dialog = false;
-    //             this.exampleForm.reset();
-    //         },
-    //         error: () => {
-    //             this.messageService.add({
-    //                 severity: 'error',
-    //                 summary: 'Error',
-    //                 detail: 'Failed to add hospital'
-    //             });
-    //         }
-    //     });
-    // } else {
-        // this.messageService.add({
-        //     severity: 'warn',
-        //     summary: 'Validation Error',
-        //     detail: 'Please complete the form before submitting.'
-        // });
-
-        // const formData = this.exampleForm.value;
-        // console.log('Form verileri:', formData);
-        // this.messageService.add({
-        //     severity: 'success',
-        //     summary: 'Form Submitted',
-        //     detail: `Hospital Name: ${formData.Name}, address: ${formData.address}, Phone: ${formData.phone}`
-        // });
-        // this.hideDialog();
-        // this.exampleForm.markAllAsTouched();
         
             if (this.exampleForm.valid) {
                 
                 const formData = this.exampleForm.value;
         
-                // Güncellenmiş hospital objesini oluştur
                 const hospital: HospitalModel = {
                     ...this.hospital,
                     name: formData.Name,
@@ -259,9 +197,6 @@ onSubmit() {
                 };
         
                 if (this.hospital?.id) {
-                    
-                    // Güncelleme işlemi
-                    
                     this.hospitalService.updateHospital(hospital).subscribe({
                         next: () => {
                             this.messageService.add({
@@ -282,7 +217,6 @@ onSubmit() {
                     });
                 } else {
                     
-                    // Yeni ekleme işlemi
                     this.hospitalService.addHospital(hospital).subscribe({
                         next: () => {
                             
@@ -293,7 +227,7 @@ onSubmit() {
                             });
                             this.hospitalSaved.emit(); 
                             this.closeDialog();
-                            this.exampleForm.reset(); // Formu sıfırla
+                            this.exampleForm.reset(); 
                         },
                         error: () => {
                             this.messageService.add({
@@ -321,18 +255,13 @@ onSubmit() {
     }
     
     openNew() {
-        this.hospital = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
+        this.hospital = { address: '', id: '', name: '' ,phone: '' };
         this.submitted = false;
         this.hospitalDialog = true;
     }
 
-    // editHospital(hospital: Hospital) {
-    //     this.hospital = { ...hospital };
-    //     this.hospitalDialog = true;
-    // }
-
 editHospital(hospital: HospitalModel) {
-  this.hospital = { ...hospital };  // referans kopyalamadan kaçınmak için spread
+  this.hospital = { ...hospital };  
   this.hospitalDialog = true;
 
   this.exampleForm.patchValue({
@@ -345,10 +274,8 @@ editHospital(hospital: HospitalModel) {
 
     hideDialog() {
         this.changeProductDialogvisibile.emit(false)
+        
     }
-
-
-
 
     createId(): string {
         let id = '';
@@ -361,11 +288,8 @@ editHospital(hospital: HospitalModel) {
 
     saveProduct() {
         this.submitted = true;
-        //let _products = this.hospitals();
         if (this.hospital.name?.trim()) {
             if (this.hospital.id) {
-               // _products[this.findIndexById(this.hospital.id)] = this.hospital;
-                //this.hospitals.set([..._products]);
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -380,12 +304,10 @@ editHospital(hospital: HospitalModel) {
                     detail: 'Hospital Created',
                     life: 3000
                 });
-               // this.hospitals.set([..._products, this.hospital]);
             }
 
             this.hospitalDialog = false;
-            this.hospital = { address: '', id: '', code: '', name: '', description: '', price: 0, category: '', quantity: 0, inventoryStatus: '', rating: 0, phone: '' };
-
+            this.hospital = { address: '', id: '', name: '' ,phone: '' };
         }
     }
 }

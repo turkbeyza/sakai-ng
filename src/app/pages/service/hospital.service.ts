@@ -8,19 +8,11 @@ interface InventoryStatus {
     value: string;
 }
 
-export interface HospitalModel {
+export class HospitalModel {
     phone: any;
     address: any;
     id?: string;
-    code?: string;
     name?: string;
-    description?: string;
-    price?:number,
-    category?:string,
-    quantity?:number,
-    inventoryStatus?:string,
-    rating?:number
-
 }
 
 @Injectable({
@@ -49,93 +41,11 @@ export class HospitalService {
         
       }      
     
-      
-
-
-
-      
     apiUrl(apiUrl: any): Observable<any> {
         throw new Error('Method not implemented.');
     }
-    
-    getProductsData() {
-        return [
-            
-            {
-                id: '1000',
-                code: 'f230fh0g3',
-                name: 'Bamboo Watch',
-            
-            },
-           
-        ];
-    }
 
-    getProductsWithOrdersData() {
-        return [
-            {     
-            }
-        ];
-    }
-    
-    
-    status: string[] = ['OUTOFSTOCK', 'INSTOCK', 'LOWSTOCK'];
-
-    productNames: string[] = [ ];
 
     constructor(private http: HttpClient) {}
 
-    getProductsMini() {
-        return Promise.resolve(this.getProductsData().slice(0, 5));
-    }
-
-    getProductsSmall() {
-        return Promise.resolve(this.getProductsData().slice(0, 10));
-    }
-
-    getProducts() {
-        return Promise.resolve(this.getProductsData());
-    }
-
-    getProductsWithOrdersSmall() {
-        return Promise.resolve(this.getProductsWithOrdersData().slice(0, 10));
-    }
-
-    
-
-    generateId() {
-        let text = '';
-        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-        for (var i = 0; i < 5; i++) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-
-        return text;
-    }
-
-    generateName() {
-        return this.productNames[Math.floor(Math.random() * Math.floor(30))];
-    }
-
-    generatePrice() {
-        return Math.floor(Math.random() * Math.floor(299) + 1);
-    }
-
-    generateQuantity() {
-        return Math.floor(Math.random() * Math.floor(75) + 1);
-    }
-
-    generateStatus() {
-        return this.status[Math.floor(Math.random() * Math.floor(3))];
-    }
-
-    updateHospitalById(id: string, hospital: HospitalModel): Observable<any> {
-        // Eğer diğer metodlarınızda da özel header yoksa:
-        return this.http.put(`${this.apiUrl}/hospitals/${id}`, hospital);
-    }
-
-    generateRating() {
-        return Math.floor(Math.random() * Math.floor(5) + 1);
-    }
 }

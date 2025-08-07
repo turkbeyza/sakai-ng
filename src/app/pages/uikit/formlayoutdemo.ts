@@ -125,5 +125,5 @@ export class FormLayoutDemo {
         { name: 'Option 3', code: 'Option 3' }
     ];
 
-    dropdownItem = null;
+    dropdownItem: any = null;
 }

@@ -59,17 +59,13 @@ interface ExportColumn {
     HospitalAddUpdate
 ],
 
-
-    
     template: `<app-hospital-list 
     (changeProductDialogvisibile)='changeProductDialogvisibile($event)' (editEvent)='editEvent($event)' />
 
-    <!-- (editEvent)="editHospital($event)" -->
     
     <app-hospital-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [hospitalDialog]= 'hospitalDialog'
     (hospitalSaved)="onHospitalSaved()" [editHospitalData] = 'editHospitalData'  />
 
-    <!-- [editHospitalData]="hospital" -->
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
@@ -89,10 +85,6 @@ export class Hospital implements OnInit {
     @ViewChild('dt') dt!: Table;
 
     @ViewChild(HospitalList) hospitallist!: HospitalList;
-
-    exportColumns!: ExportColumn[];
-
-    cols!: Column[];
 
     editHospitalData!:HospitalModel
 
@@ -114,18 +106,6 @@ export class Hospital implements OnInit {
     }
 
     loadDemoData() {
-        // this.hospitalService.getProducts().then((data) => {
-        //     this.hospitals.set(data);
-        // });
-
-    
-
-        this.cols = [
-            { field: 'code', header: 'Code', customExportHeader: 'Hospital Code' },
-            { field: 'name', header: 'Name' },
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -133,14 +113,13 @@ export class Hospital implements OnInit {
     }
 
     openNew() {
-        this.hospital = { address: null, phone: null }; // 'address' ve 'phone' özellikleri eklendi
+        this.hospital = { address: null, phone: null };
         this.submitted = false;
         this.hospitalDialog = true;
     }
 
 
     onHospitalSaved() {
-        
         this.hospitallist.loadDemoData();
         this.hospitalDialog = false; 
       }
@@ -171,15 +150,15 @@ export class Hospital implements OnInit {
 
     changeProductDialogvisibile(visible:boolean) {
         this.hospitalDialog = visible;
+        if(!visible){
+            this.editHospitalData=null
+        }
     }
 
     hideDialog() {
         this.hospitalDialog = false;
         this.submitted = false;
     }
-
-   
-
 
     deleteProduct(hospital: HospitalModel) {
         this.confirmationService.confirm({
@@ -198,54 +177,4 @@ export class Hospital implements OnInit {
             }
         });
     }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.hospitals().length; i++) {
-            if (this.hospitals()[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
-
-    saveProduct() {
-        this.submitted = true;
-        let _products = this.hospitals();
-        if (this.hospital.name?.trim()) {
-            if (this.hospital.id) {
-                _products[this.findIndexById(this.hospital.id)] = this.hospital;
-                this.hospitals.set([..._products]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Hospital Updated',
-                    life: 3000
-                });
-            } else {
-                this.hospital.id = this.createId();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Hospital Created',
-                    life: 3000
-                });
-                this.hospitals.set([..._products, this.hospital]);
-            }
-
-            this.hospitalDialog = false;
-            this.hospital = { address: null, phone: null }; // Initialize with required properties
-        }
-    }
-}
+ }

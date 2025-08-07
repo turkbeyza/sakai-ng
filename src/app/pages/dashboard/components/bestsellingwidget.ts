@@ -92,7 +92,7 @@ import { MenuModule } from 'primeng/menu';
     </div>`
 })
 export class BestSellingWidget {
-    menu = null;
+    menu: any = null;
 
     items = [
         { label: 'Add New', icon: 'pi pi-fw pi-plus' },
