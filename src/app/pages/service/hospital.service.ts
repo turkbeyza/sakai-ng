@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HospitalModel } from '../deneme/hospital_model';
+import { HospitalModel } from '../Hospital/hospital_model';
 
 
 interface InventoryStatus {

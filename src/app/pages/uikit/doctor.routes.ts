@@ -10,9 +10,9 @@ import { PanelsDemo } from './panelsdemo';
 import { TimelineDemo } from './timelinedemo';
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
-import { Hospital } from '../deneme/hospital';
+import { Doctor } from '../Doctor/doctor';
 
 export default [
-    { path: 'hospital', data: { breadcrumb: 'Hospital' }, component: Hospital },
+    { path: 'doctor', data: { breadcrumb: 'Doctor' }, component: Doctor },
 
 ] as Routes;

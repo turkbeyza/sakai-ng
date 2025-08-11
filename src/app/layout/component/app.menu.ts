@@ -30,6 +30,7 @@ export class AppMenu {
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
                     { label: 'Hospital', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/hospital'] },
+                    { label: 'Doctor', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/doctor'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/uikit/button'] },
                     { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },

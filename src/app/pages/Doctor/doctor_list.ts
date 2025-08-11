@@ -18,8 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { HospitalService } from '../service/hospital.service';
-import { HospitalModel } from './hospital_model';
+import { DoctorService } from '../service/doctor.service';
+import { DoctorModel } from './doctor_model';
 
 
 
@@ -35,7 +35,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-hospital-list',
+    selector: 'app-doctor-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -69,19 +69,19 @@ interface ExportColumn {
             </ng-template>
 
             
-            <ng-template pTemplate="body" let-hospital>
+             <ng-template pTemplate="body" let-doctor>
     <tr>
-      <td>{{ hospital.name }}</td>
-      <td>{{ hospital.address }}</td>
-      <td>{{ hospital.phone }}</td>
+      <td>{{ doctor.name }}</td>
+      <td>{{ doctor.surname }}</td>
+
       <td>
       <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
-  (click)="editHospital(hospital)">
+  (click)="editDoctor(doctor)">
 </button>
 
       </td>
     </tr>
-  </ng-template>
+  </ng-template> 
 
 
             <ng-template #end>
@@ -92,10 +92,10 @@ interface ExportColumn {
         <p-table
             #dt
 
-            [value]="hospitals"
+            [value]="doctors"
 
             
-            [value]="hospitals"
+            [value]="doctors"
 
             [rows]="10"
             
@@ -109,7 +109,7 @@ interface ExportColumn {
 
             [rowHover]="true"
             dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} hospitals"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} doctors"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
 
@@ -119,7 +119,7 @@ interface ExportColumn {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Products</h5>
+                    <h5 class="m-0">Manage Doctors</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -139,55 +139,56 @@ interface ExportColumn {
                         <p-sortIcon field="name" />
                     </th>
 
-                <th pSortableColumn="phone" style="min-width: 12rem">
-            Phone Number
-            <p-sortIcon field="phone" />
+                <th pSortableColumn="surname" style="min-width: 12rem">
+            Surname
+            <p-sortIcon field="surname" />
         </th>
     
-    <th pSortableColumn="address" style="width: 100%">
-            Address
-            <p-sortIcon field="address" />
-        </th>
-        <th style="min-width: 12rem " > Edit </th>
+     <!-- <th pSortableColumn="department" style="width: 100%">
+    Department
+            <p-sortIcon field="department" />
+        </th> -->
+        
+        <th style="min-width: 12rem " > Edit </th> 
 
         </tr>
 
             </ng-template>
-            <ng-template #body let-hospital>
+            <ng-template #body let-doctor>
                 <tr>
                     <td style="width: 3rem">
-                        <p-tableCheckbox [value]="hospital" />
+                        <p-tableCheckbox [value]="doctor" />
                     </td>
 
-                    <td style="min-width: 16rem">{{ hospital.name }}</td>
-                    <td>{{ hospital.phone }}</td>
-                    <td>{{ hospital.address }}</td>
+                    <td style="min-width: 16rem">{{ doctor.name }}</td>
+                    <td style="min-width: 12rem">{{ doctor.surname }}</td>
+                    <!-- <td>{{ doctor.department }}</td> -->
                     <td>
-                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editHospital(hospital)" />
+                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editDoctor(doctor)" />
                     </td>
                 </tr>
             </ng-template>
         </p-table>
 <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, HospitalService, ConfirmationService]
+    providers: [MessageService, DoctorService, ConfirmationService]
 })
-export class HospitalList implements OnInit {
+export class DoctorList implements OnInit {
 
 
-hospital: any;
+doctor: any;
 
 
 @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-@Output() editEvent = new EventEmitter<HospitalModel>();
+@Output() editEvent = new EventEmitter<DoctorModel>();
 
 
 
-    hospitals: any[] = [];
+    doctors: any[] = [];
 
-    selectedProduct!: HospitalModel[];
+    selectedProduct!: DoctorModel[];
 
-    selectedProducts!: HospitalModel[] | null;
+    selectedProducts!: DoctorModel[] | null;
 
     submitted: boolean = false;
 
@@ -198,7 +199,7 @@ hospital: any;
 
     constructor(
 
-        @Inject(HospitalService) private hospitalService: HospitalService,
+        @Inject(DoctorService) private doctorService: DoctorService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -211,16 +212,16 @@ hospital: any;
         this.loadDemoData();
     }
 
-    loadHospitals(): void {
-        this.hospitalService.getHospitals().subscribe(data => {
-          this.hospital = data;
+    loadDoctors(): void {
+        this.doctorService.getDoctors().subscribe(data => {
+          this.doctor = data;
         });
       }
 
     loadDemoData() {
-        this.hospitalService.getHospitals().subscribe({
+        this.doctorService.getDoctors().subscribe({
             next: (data: any) => {
-                this.hospitals = data;
+                this.doctors = data;
                 console.log(data);
             },
             error: (err: any) => console.log(err)
@@ -237,8 +238,8 @@ hospital: any;
     }
 
 
-    editHospital(hospital: any) { 
-        this.editEvent.emit(hospital);  
+    editDoctor(doctor: any) { 
+        this.editEvent.emit(doctor);  
         this.changeProductDialogvisibile.emit(true); 
       }
       
@@ -246,13 +247,13 @@ hospital: any;
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected hospitals?',
+            message: 'Are you sure you want to delete the selected doctors?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
 
             accept: ( ) => { 
                 
-                this.hospitalService.deleteHospital(this.selectedProduct[0].id).subscribe({
+                this.doctorService.deleteDoctor(this.selectedProduct[0].id).subscribe({
                     next: (data: any) => {
                         // this.loadDemoData();
                         this.messageService.add({
@@ -276,10 +277,10 @@ hospital: any;
         this.submitted = false;
     }
 
-    @Output() deleteProductEvent = new EventEmitter<HospitalModel>();
+    @Output() deleteProductEvent = new EventEmitter<DoctorModel>();
 
 
-    deleteProduct(hospital: HospitalModel) {
+    deleteProduct(doctor: DoctorModel) {
     }
 
 }

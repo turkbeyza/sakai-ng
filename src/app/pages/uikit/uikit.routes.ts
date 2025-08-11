@@ -11,11 +11,13 @@ import { TimelineDemo } from './timelinedemo';
 
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
-import { Hospital } from '../deneme/hospital';
+import { Hospital } from '../Hospital/hospital';
+import { Doctor } from '../Doctor/doctor';
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
     { path: 'hospital', data: { breadcrumb: 'hospital' }, component: Hospital },
+    { path: 'doctor', data: { breadcrumb: 'doctor' }, component: Doctor },
     { path: 'charts', data: { breadcrumb: 'Charts' }, component: ChartDemo },
     { path: 'file', data: { breadcrumb: 'File' }, component: FileDemo },
     { path: 'formlayout', data: { breadcrumb: 'Form Layout' }, component: FormLayoutDemo },
