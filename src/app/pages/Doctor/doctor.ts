@@ -114,7 +114,7 @@ export class Doctor implements OnInit {
     }
 
     openNew() {
-        this.doctor = { id: null, name: null, surname: null}; // height özelliği eklendi
+        this.doctor = { id: null, name: null, surname: null}; 
         this.submitted = false;
         this.doctorDialog = true;
     }

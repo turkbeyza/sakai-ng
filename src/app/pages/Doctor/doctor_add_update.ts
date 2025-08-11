@@ -73,14 +73,14 @@ interface ExportColumn {
         }
     </div>
     <div class="flex flex-col gap-1">
-        <input pInputText type="text" id="surname" placeholder="Surname" formControlName="surname" [invalid]="isInvalid('surname')" />
-        @if (isInvalid('surname')) {
-            @if (exampleForm.get('surname')?.errors?.['required']) {
+        <input pInputText type="text" id="Surname" placeholder="Surname" formControlName="Surname" [invalid]="isInvalid('Surname')" />
+        @if (isInvalid('Surname')) {
+            @if (exampleForm.get('Surname')?.errors?.['required']) {
                 <p-message severity="error" size="small" variant="simple">surname is required.</p-message>
             }
-            @if (exampleForm.get('surname')?.errors?.['surname']) {
+            <!-- @if (exampleForm.get('surname')?.errors?.['surname']) {
                 <p-message severity="error" size="small" variant="simple">Please enter a valid surname.</p-message>
-            }
+            } -->
         }
 
         <!-- <div class="flex flex-col gap-1">
@@ -150,18 +150,19 @@ export class DoctorAddUpdate implements OnInit, OnChanges {
         ngOnInit() {
             this.exampleForm = this.fb.group({
               Name: ['', Validators.required],
-              surname: ['', [Validators.required, Validators.required]],
+              Surname: ['', [Validators.required, Validators.required]],
+              Type: ['Doctor'],
             //   department: ['', [Validators.required, Validators.pattern(/^\d{10,15}$/)]]
             });
           }
 
           ngOnChanges(changes: SimpleChanges): void {
             if (changes['doctorDialog'] && changes['doctorDialog'].currentValue) {
-                debugger
    if (this.editDoctorData) {
     this.exampleForm.patchValue({
         Name: this.editDoctorData.name,
-        surname: this.editDoctorData.surname,
+        Surname: this.editDoctorData.surname,
+        Type: 'Doctor',
         // department: this.editDoctorData.department
       });
       this.doctor = { ...this.editDoctorData }; // update mode
@@ -170,6 +171,7 @@ export class DoctorAddUpdate implements OnInit, OnChanges {
       id: '',
       name: '',
       surname: '',
+      type:'Doctor',
     //   department: '',
     };
     this.exampleForm.reset(); // add mode
@@ -195,7 +197,8 @@ onSubmit() {
                 const doctor: DoctorModel = {
                     ...this.doctor,
                     name: formData.Name,
-                    surname: formData.surname,
+                    surname: formData.Surname,
+                    type: formData.Type,
                     // department: formData.department
                 };
         
@@ -220,7 +223,7 @@ onSubmit() {
                         }
                     });
                 } else {
-                    
+                    // debugger
                      this.doctorService.addDoctor(doctor).subscribe
                     (
                         {
@@ -261,7 +264,7 @@ onSubmit() {
     }
     
     openNew() {
-        this.doctor = { surname: '', id: '', name: '' };
+        this.doctor = { surname: '', id: '', name: '', type:'Doctor' };
         this.submitted = false;
         this.doctorDialog = true;
     }
@@ -272,7 +275,9 @@ editDoctor(doctor: DoctorModel) {
 
   this.exampleForm.patchValue({
     Name: doctor.name,
-    surname: doctor.surname,
+    Surname: doctor.surname,
+    Type: doctor.type,
+
     // department: doctor.department
   });
 }
@@ -313,7 +318,7 @@ editDoctor(doctor: DoctorModel) {
             }
 
             this.doctorDialog = false;
-            this.doctor = { surname: '', id: '', name: ''};
+            this.doctor = { surname: '', id: '', name: '', type:'Doctor'};
         }
     }
 }
