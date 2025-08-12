@@ -13,11 +13,15 @@ import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
 import { Hospital } from '../Hospital/hospital';
 import { Doctor } from '../Doctor/doctor';
+import { Patient } from '../Patient/patient';
+import { Appointments } from '../Appointments/appointments';
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
     { path: 'hospital', data: { breadcrumb: 'hospital' }, component: Hospital },
+    { path: 'patient', data: { breadcrumb: 'patient' }, component: Patient },
     { path: 'doctor', data: { breadcrumb: 'doctor' }, component: Doctor },
+    { path: 'appointments', data: { breadcrumb: 'appointments' }, component: Appointments },
     { path: 'charts', data: { breadcrumb: 'Charts' }, component: ChartDemo },
     { path: 'file', data: { breadcrumb: 'File' }, component: FileDemo },
     { path: 'formlayout', data: { breadcrumb: 'Form Layout' }, component: FormLayoutDemo },
