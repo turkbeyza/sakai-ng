@@ -170,6 +170,9 @@ interface ExportColumn {
             </ng-template>
         </p-table>
 <p-confirmdialog [style]="{ width: '450px' }" />
+
+
+
     `,
     providers: [MessageService, FavoritesService, ConfirmationService]
 })

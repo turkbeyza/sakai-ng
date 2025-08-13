@@ -24,6 +24,7 @@ import { AppointmentsAddUpdate } from './appointments_add_apdate';
 import { AppointmentsService } from '../service/appointments.service';
 
 
+
 interface Column {
     field: string;
     header: string;
@@ -89,6 +90,11 @@ export class Appointments implements OnInit {
     @ViewChild(AppointmentsList) appointmentslist!: AppointmentsList;
 
     editAppointmentsData!:AppointmentsModel
+    patients: any;
+    doctors: any;
+    hospitals: any;
+    selectedAppointment: {};
+    dialogVisible: boolean;
 
     constructor(
         @Inject(AppointmentsService) private appointmentsService: AppointmentsService,
@@ -96,16 +102,47 @@ export class Appointments implements OnInit {
         private confirmationService: ConfirmationService
     ) {}
 
+    ngOnInit() {
+        this.loadDemoData();
+        this.loadDropdownData();
+      }
+      
+      loadDropdownData() {
+        this.appointmentsService.getPatients().subscribe(res => this.patients = res);
+        this.appointmentsService.getDoctors().subscribe(res => this.doctors = res);
+        this.appointmentsService.getHospitals().subscribe(res => this.hospitals = res);
+      }
+      
+      openNew() {
+        this.selectedAppointment = {};
+        this.dialogVisible = true;
+      }
+      
+      editAppointments(appointments: any) { 
+        this.selectedAppointment = { ...appointments };
+        this.dialogVisible = true;
+      }
+      
+        saveAppointment() {
+            if ((this.selectedAppointment as AppointmentsModel).patientUserId) {
+                this.appointmentsService.updateAppointments(this.selectedAppointment).subscribe(() => this.loadDemoData());
+            } else {
+                this.appointmentsService.addAppointments(this.selectedAppointment).subscribe(() => this.loadDemoData());
+            }
+            this.dialogVisible = false;
+        }
+
+
     editEvent(appointments: AppointmentsModel){
-        this.editAppointmentsData=appointments
+            this.editAppointmentsData=appointments
     }
     exportCSV() {
         this.dt.exportCSV();
     }
 
-    ngOnInit() {
-        this.loadDemoData();
-    }
+    // ngOnInit() {
+    //     this.loadDemoData();
+    // }
 
     loadDemoData() {
     }
@@ -114,11 +151,11 @@ export class Appointments implements OnInit {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    openNew() {
-        this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null };
-        this.submitted = false;
-        this.appointmentsDialog = true;
-    }
+    // openNew() {
+    //     this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null };
+    //     this.submitted = false;
+    //     this.appointmentsDialog = true;
+    // }
 
     onAppointmentsSaved() {
         this.appointmentslist.loadDemoData();
@@ -126,10 +163,10 @@ export class Appointments implements OnInit {
     }
       
 
-    editAppointments(appointments: AppointmentsModel) {
-        this.appointments = { ...appointments };
-        this.appointmentsDialog = true;
-    }
+    // editAppointments(appointments: AppointmentsModel) {
+    //     this.appointments = { ...appointments };
+    //     this.appointmentsDialog = true;
+    // }
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({

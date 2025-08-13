@@ -82,6 +82,16 @@ export class Favorites implements OnInit {
 
     selectedProducts!: FavoritesModel[] | null;
 
+    dropdownValue: FavoritesModel | null = null;
+dropdownValues: FavoritesModel[] = [];
+
+multiselectSelectedFavorites: FavoritesModel[] = [];
+multiselectFavorites: FavoritesModel[] = [];
+
+treeSelectNodes: any[] = [];
+selectedNode: any = null;
+
+
     submitted: boolean = false;
 
     @ViewChild('dt') dt!: Table;
@@ -149,6 +159,8 @@ export class Favorites implements OnInit {
             }
         });
     }
+
+     
 
     changeProductDialogvisibile(visible:boolean) {
         this.favoritesDialog = visible;

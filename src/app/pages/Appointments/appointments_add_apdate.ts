@@ -26,6 +26,7 @@ import { AppointmentsService } from '../service/appointments.service';
 
 
 
+
 interface Column {
     field: string;
     header: string;
@@ -147,6 +148,8 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
     cols!: Column[];
     exampleForm: any;
     dialog: boolean | undefined;
+    dialogVisible: boolean;
+    selectedAppointment: any;
 
 
     constructor(
@@ -170,32 +173,67 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
                 });
             }
 
-          ngOnChanges(changes: SimpleChanges): void {
-            if (changes['appointmentsDialog'] && changes['appointmentsDialog'].currentValue) {
-                debugger
-   if (this.editAppointmentsData) {
-    this.exampleForm.patchValue({
-        patientUserId: this.editAppointmentsData.patientUserId,
-        doctorUserId: this.editAppointmentsData.doctorUserId,
-        hospitalId: this.editAppointmentsData.hospitalId,
-        appointmentDate: this.editAppointmentsData.appointmentDate
+//           ngOnChanges(changes: SimpleChanges): void {
+//             if (changes['appointmentsDialog'] && changes['appointmentsDialog'].currentValue) {
+//                 debugger
+//    if (this.editAppointmentsData) {
+//     this.exampleForm.patchValue({
+//         patientUserId: this.editAppointmentsData.patientUserId,
+//         doctorUserId: this.editAppointmentsData.doctorUserId,
+//         hospitalId: this.editAppointmentsData.hospitalId,
+//         appointmentDate: this.editAppointmentsData.appointmentDate
 
-      });
-      this.appointments = { ...this.editAppointmentsData }; // update mode
-} else {
-        this.appointments = {
-            patientUserId: '',
-            doctorUserId: '',
-            hospitalId: '',
-            appointmentDate: new Date(), // add mode
-            id: null // add mode
-        };
-        this.exampleForm.reset(); // add mode
+//       });
+//       this.appointments = { ...this.editAppointmentsData }; // update mode
+// } else {
+//         this.appointments = {
+//             patientUserId: '',
+//             doctorUserId: '',
+//             hospitalId: '',
+//             appointmentDate: new Date(), // add mode
+//             id: null // add mode
+//         };
+//         this.exampleForm.reset(); // add mode
 
-                        } 
-          }
-        }
+//                         } 
+//           }
+//         }
           
+
+ngOnChanges(changes: SimpleChanges): void {
+    if (changes['appointmentsDialog'] && changes['appointmentsDialog'].currentValue) {
+      if (this.editAppointmentsData) {
+        // Format the appointmentDate for datetime-local input (yyyy-MM-ddTHH:mm)
+        const date = new Date(this.editAppointmentsData.appointmentDate);
+        const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16); // Slice to get yyyy-MM-ddTHH:mm
+  
+        this.exampleForm.patchValue({
+          patientUserId: this.editAppointmentsData.patientUserId,
+          doctorUserId: this.editAppointmentsData.doctorUserId,
+          hospitalId: this.editAppointmentsData.hospitalId,
+          appointmentDate: localISO
+        });
+        this.appointments = { ...this.editAppointmentsData, appointmentDate: localISO };
+      } else {
+        // For add mode, initialize with current date in correct format
+        const currentDate = new Date();
+        const localISO = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+        this.appointments = {
+          patientUserId: '',
+          doctorUserId: '',
+          hospitalId: '',
+          appointmentDate: localISO,
+          id: null
+        };
+        this.exampleForm.reset();
+        this.exampleForm.patchValue({ appointmentDate: localISO });
+      }
+    }
+  }
              
 
     isInvalid(controlName: string): boolean {
@@ -204,72 +242,136 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
       }
       
 
-onSubmit() {
+// onSubmit() {
         
-            if (this.exampleForm.valid) {
+//             if (this.exampleForm.valid) {
                 
-                const formData = this.exampleForm.value;
+//                 const formData = this.exampleForm.value;
         
-                const appointments: AppointmentsModel = {
-                    ...this.appointments,
-                    patientUserId: formData.patientUserId,
-                    doctorUserId: formData.doctorUserId,
-                    hospitalId: formData.hospitalId,
-                    appointmentDate: formData.appointmentDate
-                };
+//                 const appointments: AppointmentsModel = {
+//                     ...this.appointments,
+//                     patientUserId: formData.patientUserId,
+//                     doctorUserId: formData.doctorUserId,
+//                     hospitalId: formData.hospitalId,
+//                     appointmentDate: formData.appointmentDate
+//                 };
         
-                if (this.appointments?.id) {
-                    this.appointmentsService.updateAppointments(appointments).subscribe({
-                        next: () => {
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Updated',
-                                detail: 'Appointments updated successfully'
-                            });
-                            this.appointmentsSaved.emit();
-                            this.closeDialog();
-                        },
-                        error: () => {
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Error',
-                                detail: 'Failed to update appointments'
-                            });
-                        }
-                    });
-                } else {
+//                 if (this.appointments?.id) {
+//                     this.appointmentsService.updateAppointments(appointments).subscribe({
+//                         next: () => {
+//                             this.messageService.add({
+//                                 severity: 'success',
+//                                 summary: 'Updated',
+//                                 detail: 'Appointments updated successfully'
+//                             });
+//                             this.appointmentsSaved.emit();
+//                             this.closeDialog();
+//                         },
+//                         error: () => {
+//                             this.messageService.add({
+//                                 severity: 'error',
+//                                 summary: 'Error',
+//                                 detail: 'Failed to update appointments'
+//                             });
+//                         }
+//                     });
+//                 } else {
                     
-                    this.appointmentsService.addAppointments(appointments).subscribe({
-                        next: () => {
+//                     this.appointmentsService.addAppointments(appointments).subscribe({
+//                         next: () => {
                             
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Added',
-                                detail: 'Appointments added successfully'
-                            });
-                            this.appointmentsSaved.emit(); 
-                            this.closeDialog();
-                            this.exampleForm.reset(); 
-                        },
-                        error: () => {
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Error',
-                                detail: 'Failed to add appointments'
-                            });
-                        }
-                    });
-                }
-            } else {
-                this.exampleForm.markAllAsTouched();
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Validation Error',
-                    detail: 'Please complete the form before submitting.'
-                });
-            }
-        }
-
+//                             this.messageService.add({
+//                                 severity: 'success',
+//                                 summary: 'Added',
+//                                 detail: 'Appointments added successfully'
+//                             });
+//                             this.appointmentsSaved.emit(); 
+//                             this.closeDialog();
+//                             this.exampleForm.reset(); 
+//                         },
+//                         error: () => {
+//                             this.messageService.add({
+//                                 severity: 'error',
+//                                 summary: 'Error',
+//                                 detail: 'Failed to add appointments'
+//                             });
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 this.exampleForm.markAllAsTouched();
+//                 this.messageService.add({
+//                     severity: 'warn',
+//                     summary: 'Validation Error',
+//                     detail: 'Please complete the form before submitting.'
+//                 });
+//             }
+//         }
+onSubmit() {
+    if (this.exampleForm.valid) {
+      const formData = this.exampleForm.value;
+  
+      // Convert datetime-local input (yyyy-MM-ddTHH:mm) to ISO format (yyyy-MM-ddTHH:mm:ss.SSSZ)
+      const localDate = new Date(formData.appointmentDate);
+      const isoDate = new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000).toISOString();
+  
+      const appointments: AppointmentsModel = {
+        ...this.appointments,
+        patientUserId: formData.patientUserId,
+        doctorUserId: formData.doctorUserId,
+        hospitalId: formData.hospitalId,
+        appointmentDate: isoDate
+      };
+  
+      if (this.appointments?.id) {
+        this.appointmentsService.updateAppointments(appointments).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Updated',
+              detail: 'Appointments updated successfully'
+            });
+            this.appointmentsSaved.emit();
+            this.closeDialog();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to update appointments'
+            });
+          }
+        });
+      } else {
+        this.appointmentsService.addAppointments(appointments).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Added',
+              detail: 'Appointments added successfully'
+            });
+            this.appointmentsSaved.emit();
+            this.closeDialog();
+            this.exampleForm.reset();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to add appointments'
+            });
+          }
+        });
+      }
+    } else {
+      this.exampleForm.markAllAsTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation Error',
+        detail: 'Please complete the form before submitting.'
+      });
+    }
+  }
 
     closeDialog() {
         
@@ -282,16 +384,30 @@ onSubmit() {
         this.appointmentsDialog = true;
     }
 
-editAppointments(appointments: AppointmentsModel) {
-  this.appointments = { ...appointments };  
-  this.appointmentsDialog = true;
+// editAppointments(appointments: AppointmentsModel) {
+//   this.appointments = { ...appointments };  
+//   this.appointmentsDialog = true;
 
-  this.exampleForm.patchValue({
-    patientUserId: appointments.patientUserId,
-    doctorUserId: appointments.doctorUserId,
-    hospitalId: appointments.hospitalId,
-    appointmentDate: appointments.appointmentDate
-  });
+//   this.exampleForm.patchValue({
+//     patientUserId: appointments.patientUserId,
+//     doctorUserId: appointments.doctorUserId,
+//     hospitalId: appointments.hospitalId,
+//     appointmentDate: appointments.appointmentDate
+//   });
+// }
+
+editAppointments(appointment: any) {
+    const date = new Date(appointment.appointmentDate);
+    // datetime-local input için yyyy-MM-ddTHH:mm formatı
+    const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+                        .toISOString()
+                        .slice(0,16);
+
+    this.selectedAppointment = {
+        ...appointment,
+        appointmentDate: localISO
+    };
+    this.dialogVisible = true;
 }
 
 
