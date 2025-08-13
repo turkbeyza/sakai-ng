@@ -18,8 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsService } from '../service/appointments.service';
+import { FavoritesModel } from './favorites_model';
+import { FavoritesService } from '../service/favorites_service';
 
 
 
@@ -35,7 +35,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-appointments-list',
+    selector: 'app-favorites-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -69,15 +69,14 @@ interface ExportColumn {
             </ng-template>
 
             
-            <ng-template pTemplate="body" let-appointments>
+            <ng-template pTemplate="body" let-favorites>
     <tr>
-      <td>{{ appointments.patientuserId}}</td>
-      <td>{{ appointments.doctorUserId }}</td>
-      <td>{{ appointments.hospitalId }}</td>
-      <td>{{ appointments.appointmentdate }}</td>
+      <td>{{ favorites.patientUserId }}</td>
+      <!-- <td>{{ favorites.address }}</td> -->
+      <td>{{ favorites.doctorUserId }}</td>
       <td>
       <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
-  (click)="editAppointments(appointments)">
+  (click)="editFavorites(favorites)">
 </button>
 
       </td>
@@ -93,10 +92,10 @@ interface ExportColumn {
         <p-table
             #dt
 
-            [value]="appointmentss"
+            [value]="favoritess"
 
             
-            [value]="appointmentss"
+            [value]="favoritess"
 
             [rows]="10"
             
@@ -110,7 +109,7 @@ interface ExportColumn {
 
             [rowHover]="true"
             dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} appointmentss"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} favoritess"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
 
@@ -120,7 +119,7 @@ interface ExportColumn {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Appointmentss</h5>
+                    <h5 class="m-0">Manage Favoritess</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -136,68 +135,60 @@ interface ExportColumn {
                     
 
                     <th pSortableColumn="patientUserId" style="min-width:16rem">
-                    PatientUserId
+                        PatientUserId
                         <p-sortIcon field="patientUserId" />
                     </th>
 
                 <th pSortableColumn="doctorUserId" style="min-width: 12rem">
-                DoctorUserId
+            DoctorUserId
             <p-sortIcon field="doctorUserId" />
-        </th>
+        <!-- </th> -->
     
-    <th pSortableColumn="HospitalId" style="width: 100%">
-    HospitalId
-            <p-sortIcon field="HospitalId" />
-        </th>
+     <!-- <th pSortableColumn="address" style="width: 100%">
+            Address
+            <p-sortIcon field="address" />
+        </th> -->
         
+        <th style="min-width: 12rem " > Edit </th> 
 
-        <th pSortableColumn="Appointmenttdate" style="width: 100%">
-        Appointmentdate
-            <p-sortIcon field="Appointmentdate" />
-        </th>
-        
-        <th style="min-width: 12rem " > Edit </th>
-
-        </tr>
+         </tr>
 
             </ng-template>
-            <ng-template pTemplate="body" let-appointments>
-  <tr>
-    <td style="width: 3rem">
-      <p-tableCheckbox [value]="appointments" />
-    </td>
-    <td style="min-width: 16rem">{{ appointments.patientUserId }}</td>
-    <td>{{ appointments.doctorUserId }}</td>
-    <td>{{ appointments.hospitalId }}</td>
-    <td>{{ appointments.appointmentDate | date: 'short' }}</td>
-    <td>
-      <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
-        (click)="editAppointments(appointments)" />
-    </td>
-  </tr>
-</ng-template>
+            <ng-template #body let-favorites>
+                <tr>
+                    <td style="width: 3rem">
+                        <p-tableCheckbox [value]="favorites" />
+                    </td>
 
+                    <td style="min-width: 16rem">{{ favorites.patientUserId }}</td>
+                    <td>{{ favorites.doctorUserId }}</td>
+                    <!-- <td>{{ favorites.address }}</td> -->
+                    <td>
+                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editFavorites(favorites)" />
+                    </td>
+                </tr>
+            </ng-template>
         </p-table>
 <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, FavoritesService, ConfirmationService]
 })
-export class AppointmentsList implements OnInit {
+export class FavoritesList implements OnInit {
 
 
-appointments: any;
+favorites: any;
 
 
 @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-@Output() editEvent = new EventEmitter<AppointmentsModel>();
+@Output() editEvent = new EventEmitter<FavoritesModel>();
 
 
 
-    appointmentss: any[] = [];
+    favoritess: any[] = [];
 
-    selectedProduct!: AppointmentsModel[];
+    selectedProduct!: FavoritesModel[];
 
-    selectedProducts!: AppointmentsModel[] | null;
+    selectedProducts!: FavoritesModel[] | null;
 
     submitted: boolean = false;
 
@@ -208,7 +199,7 @@ appointments: any;
 
     constructor(
 
-        @Inject(AppointmentsService) private appointmentsService: AppointmentsService,
+        @Inject(FavoritesService) private favoritesService: FavoritesService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -221,16 +212,16 @@ appointments: any;
         this.loadDemoData();
     }
 
-    loadAppointmentss(): void {
-        this.appointmentsService.getAppointments().subscribe(data => {
-          this.appointments = data;
+    loadFavoritess(): void {
+        this.favoritesService.getFavorites().subscribe(data => {
+          this.favorites = data;
         });
       }
 
     loadDemoData() {
-        this.appointmentsService.getAppointments().subscribe({
+        this.favoritesService.getFavorites().subscribe({
             next: (data: any) => {
-                this.appointmentss = data;
+                this.favoritess = data;
                 console.log(data);
             },
             error: (err: any) => console.log(err)
@@ -247,8 +238,8 @@ appointments: any;
     }
 
 
-    editAppointments(appointments: any) { 
-        this.editEvent.emit(appointments);  
+    editFavorites(favorites: any) { 
+        this.editEvent.emit(favorites);  
         this.changeProductDialogvisibile.emit(true); 
       }
       
@@ -256,13 +247,13 @@ appointments: any;
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected appointmentss?',
+            message: 'Are you sure you want to delete the selected favoritess?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
 
             accept: ( ) => { 
                 
-                this.appointmentsService.deleteAppointments(this.selectedProduct[0].id).subscribe({
+                this.favoritesService.deleteFavorites(this.selectedProduct[0].id).subscribe({
                     next: (data: any) => {
                         // this.loadDemoData();
                         this.messageService.add({
@@ -286,10 +277,10 @@ appointments: any;
         this.submitted = false;
     }
 
-    @Output() deleteProductEvent = new EventEmitter<AppointmentsModel>();
+    @Output() deleteProductEvent = new EventEmitter<FavoritesModel>();
 
 
-    deleteProduct(appointments: AppointmentsModel) {
+    deleteProduct(favorites: FavoritesModel) {
     }
 
 }

@@ -1,8 +1,8 @@
 export class AppointmentsModel {
-    patientuserid?: string;
-    doctoruserid?: string;
-    hospitalid?: string;
-    appointmentdate?: Date;
-    id: any;
+    patientUserId?: string;
+    doctorUserId?: string;
+    hospitalId?: string;
+    appointmentDate?: Date;
+    id?: string;
 }
 

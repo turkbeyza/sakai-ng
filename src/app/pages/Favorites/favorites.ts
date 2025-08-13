@@ -18,10 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AppointmentsList } from './appointments_list';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsAddUpdate } from './appointments_add_apdate';
-import { AppointmentsService } from '../service/appointments.service';
+import { FavoritesList } from './favorites_list';
+import { FavoritesAddUpdate } from './favorites_add_update';
+import { FavoritesModel } from './favorites_model';
+import { FavoritesService } from '../service/favorites_service';
 
 
 interface Column {
@@ -57,47 +57,47 @@ interface ExportColumn {
     InputIconModule,
     IconFieldModule,
     ConfirmDialogModule,
-    AppointmentsList,
-    AppointmentsAddUpdate
+    FavoritesList,
+    FavoritesAddUpdate
 ],
 
-    template: `<app-appointments-list 
+    template: `<app-favorites-list 
     (changeProductDialogvisibile)='changeProductDialogvisibile($event)' (editEvent)='editEvent($event)' />
 
     
-    <app-appointments-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [appointmentsDialog]= 'appointmentsDialog'
-    (appointmentsSaved)="onAppointmentsSaved()" [editAppointmentsData] = 'editAppointmentsData'  />
+    <app-favorites-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [favoritesDialog]= 'favoritesDialog'
+    (favoritesSaved)="onFavoritesSaved()" [editFavoritesData] = 'editFavoritesData'  />
 
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, FavoritesService, ConfirmationService]
 })
-export class Appointments implements OnInit {
-    appointmentsDialog: boolean = false;
+export class Favorites implements OnInit {
+    favoritesDialog: boolean = false;
 
-    appointmentss = signal<AppointmentsModel[]>([]);
+    favoritess = signal<FavoritesModel[]>([]);
 
-    appointments!: AppointmentsModel;
+    favorites!: FavoritesModel;
 
-    selectedProducts!: AppointmentsModel[] | null;
+    selectedProducts!: FavoritesModel[] | null;
 
     submitted: boolean = false;
 
     @ViewChild('dt') dt!: Table;
 
-    @ViewChild(AppointmentsList) appointmentslist!: AppointmentsList;
+    @ViewChild(FavoritesList) favoriteslist!: FavoritesList;
 
-    editAppointmentsData!:AppointmentsModel
+    editFavoritesData!:FavoritesModel
 
     constructor(
-        @Inject(AppointmentsService) private appointmentsService: AppointmentsService,
+        @Inject(FavoritesService) private favoritesService: FavoritesService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
-    editEvent(appointments: AppointmentsModel){
-        this.editAppointmentsData=appointments
+    editEvent(favorites: FavoritesModel){
+        this.editFavoritesData=favorites
     }
     exportCSV() {
         this.dt.exportCSV();
@@ -115,29 +115,30 @@ export class Appointments implements OnInit {
     }
 
     openNew() {
-        this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null };
+        this.favorites = { patientUserId: null, doctorUserId: null };
         this.submitted = false;
-        this.appointmentsDialog = true;
+        this.favoritesDialog = true;
     }
 
-    onAppointmentsSaved() {
-        this.appointmentslist.loadDemoData();
-        this.appointmentsDialog = false; 
-    }
+
+    onFavoritesSaved() {
+        this.favoriteslist.loadDemoData();
+        this.favoritesDialog = false; 
+      }
       
 
-    editAppointments(appointments: AppointmentsModel) {
-        this.appointments = { ...appointments };
-        this.appointmentsDialog = true;
+    editFavorites(favorites: FavoritesModel) {
+        this.favorites = { ...favorites };
+        this.favoritesDialog = true;
     }
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected appointmentss?',
+            message: 'Are you sure you want to delete the selected favoritess?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.appointmentss.set(this.appointmentss().filter((val) => !this.selectedProducts?.includes(val)));
+                this.favoritess.set(this.favoritess().filter((val) => !this.selectedProducts?.includes(val)));
                 this.selectedProducts = null;
                 this.messageService.add({
                     severity: 'success',
@@ -150,29 +151,29 @@ export class Appointments implements OnInit {
     }
 
     changeProductDialogvisibile(visible:boolean) {
-        this.appointmentsDialog = visible;
+        this.favoritesDialog = visible;
         if(!visible){
-            this.editAppointmentsData=null
+            this.editFavoritesData=null
         }
     }
 
     hideDialog() {
-        this.appointmentsDialog = false;
+        this.favoritesDialog = false;
         this.submitted = false;
     }
 
-    deleteProduct(appointments: AppointmentsModel) {
+    deleteProduct(favorites: FavoritesModel) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + appointments.id + '?',
+            message: 'Are you sure you want to delete ' + favorites.patientUserId + '?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.appointmentss.set(this.appointmentss().filter((val) => val.id !== appointments.id));
-                this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null }; // Initialize with required properties
+                this.favoritess.set(this.favoritess().filter((val) => val.id !== favorites.id));
+                this.favorites = {  doctorUserId: null, patientUserId: null }; // Initialize with required properties
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Deleted',
+                    detail: 'Favorites Deleted',
                     life: 3000
                 });
             }

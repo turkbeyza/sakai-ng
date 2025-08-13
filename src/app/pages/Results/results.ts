@@ -18,10 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AppointmentsList } from './appointments_list';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsAddUpdate } from './appointments_add_apdate';
-import { AppointmentsService } from '../service/appointments.service';
+import { ResultsList } from './results_list';
+import { ResultsAddUpdate } from './results_add_update';
+import { ResultsModel } from './results_model';
+import { ResultsService } from '../service/results.service';
 
 
 interface Column {
@@ -57,47 +57,47 @@ interface ExportColumn {
     InputIconModule,
     IconFieldModule,
     ConfirmDialogModule,
-    AppointmentsList,
-    AppointmentsAddUpdate
+    ResultsList,
+    ResultsAddUpdate
 ],
 
-    template: `<app-appointments-list 
+    template: `<app-results-list 
     (changeProductDialogvisibile)='changeProductDialogvisibile($event)' (editEvent)='editEvent($event)' />
 
     
-    <app-appointments-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [appointmentsDialog]= 'appointmentsDialog'
-    (appointmentsSaved)="onAppointmentsSaved()" [editAppointmentsData] = 'editAppointmentsData'  />
+    <app-results-add-update (changeProductDialogvisibile)='changeProductDialogvisibile($event)' [resultsDialog]= 'resultsDialog'
+    (resultsSaved)="onResultsSaved()" [editResultsData] = 'editResultsData'  />
 
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, ResultsService, ConfirmationService]
 })
-export class Appointments implements OnInit {
-    appointmentsDialog: boolean = false;
+export class Results implements OnInit {
+    resultsDialog: boolean = false;
 
-    appointmentss = signal<AppointmentsModel[]>([]);
+    resultss = signal<ResultsModel[]>([]);
 
-    appointments!: AppointmentsModel;
+    results!: ResultsModel;
 
-    selectedProducts!: AppointmentsModel[] | null;
+    selectedProducts!: ResultsModel[] | null;
 
     submitted: boolean = false;
 
     @ViewChild('dt') dt!: Table;
 
-    @ViewChild(AppointmentsList) appointmentslist!: AppointmentsList;
+    @ViewChild(ResultsList) resultslist!: ResultsList;
 
-    editAppointmentsData!:AppointmentsModel
+    editResultsData!:ResultsModel
 
     constructor(
-        @Inject(AppointmentsService) private appointmentsService: AppointmentsService,
+        @Inject(ResultsService) private resultsService: ResultsService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
 
-    editEvent(appointments: AppointmentsModel){
-        this.editAppointmentsData=appointments
+    editEvent(results: ResultsModel){
+        this.editResultsData=results
     }
     exportCSV() {
         this.dt.exportCSV();
@@ -115,29 +115,34 @@ export class Appointments implements OnInit {
     }
 
     openNew() {
-        this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null };
+        this.results = { id: '',
+        appointmentId: '',
+        fileName: '',
+        filePath: '',
+        createdAt: new Date() };
         this.submitted = false;
-        this.appointmentsDialog = true;
+        this.resultsDialog = true;
     }
 
-    onAppointmentsSaved() {
-        this.appointmentslist.loadDemoData();
-        this.appointmentsDialog = false; 
-    }
+
+    onResultsSaved() {
+        this.resultslist.loadDemoData();
+        this.resultsDialog = false; 
+      }
       
 
-    editAppointments(appointments: AppointmentsModel) {
-        this.appointments = { ...appointments };
-        this.appointmentsDialog = true;
+    editResults(results: ResultsModel) {
+        this.results = { ...results };
+        this.resultsDialog = true;
     }
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected appointmentss?',
+            message: 'Are you sure you want to delete the selected resultss?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.appointmentss.set(this.appointmentss().filter((val) => !this.selectedProducts?.includes(val)));
+                this.resultss.set(this.resultss().filter((val) => !this.selectedProducts?.includes(val)));
                 this.selectedProducts = null;
                 this.messageService.add({
                     severity: 'success',
@@ -150,29 +155,33 @@ export class Appointments implements OnInit {
     }
 
     changeProductDialogvisibile(visible:boolean) {
-        this.appointmentsDialog = visible;
+        this.resultsDialog = visible;
         if(!visible){
-            this.editAppointmentsData=null
+            this.editResultsData=null
         }
     }
 
     hideDialog() {
-        this.appointmentsDialog = false;
+        this.resultsDialog = false;
         this.submitted = false;
     }
 
-    deleteProduct(appointments: AppointmentsModel) {
+    deleteProduct(results: ResultsModel) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + appointments.id + '?',
+            message: 'Are you sure you want to delete ' + results.appointmentId + '?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.appointmentss.set(this.appointmentss().filter((val) => val.id !== appointments.id));
-                this.appointments = { id: null, patientUserId: null, doctorUserId: null, hospitalId: null, appointmentDate: null }; // Initialize with required properties
+                this.resultss.set(this.resultss().filter((val) => val.id !== results.id));
+                this.results = {id: '',
+                appointmentId: '',
+                fileName: '',
+                filePath: '',
+                createdAt: new Date() }; // Initialize with required properties
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Deleted',
+                    detail: 'Results Deleted',
                     life: 3000
                 });
             }

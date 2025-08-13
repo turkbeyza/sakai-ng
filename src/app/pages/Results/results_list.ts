@@ -18,8 +18,8 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsService } from '../service/appointments.service';
+import { ResultsModel } from './results_model';
+import { ResultsService } from '../service/results.service';
 
 
 
@@ -35,7 +35,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-appointments-list',
+    selector: 'app-results-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -69,15 +69,14 @@ interface ExportColumn {
             </ng-template>
 
             
-            <ng-template pTemplate="body" let-appointments>
+            <ng-template pTemplate="body" let-results>
     <tr>
-      <td>{{ appointments.patientuserId}}</td>
-      <td>{{ appointments.doctorUserId }}</td>
-      <td>{{ appointments.hospitalId }}</td>
-      <td>{{ appointments.appointmentdate }}</td>
+      <td>{{ results.name }}</td>
+      <td>{{ results.address }}</td>
+      <td>{{ results.phone }}</td>
       <td>
       <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
-  (click)="editAppointments(appointments)">
+  (click)="editResults(results)">
 </button>
 
       </td>
@@ -93,10 +92,10 @@ interface ExportColumn {
         <p-table
             #dt
 
-            [value]="appointmentss"
+            [value]="resultss"
 
             
-            [value]="appointmentss"
+            [value]="resultss"
 
             [rows]="10"
             
@@ -110,7 +109,7 @@ interface ExportColumn {
 
             [rowHover]="true"
             dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} appointmentss"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} resultss"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
 
@@ -120,7 +119,7 @@ interface ExportColumn {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Appointmentss</h5>
+                    <h5 class="m-0">Manage Resultss</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -135,69 +134,60 @@ interface ExportColumn {
 
                     
 
-                    <th pSortableColumn="patientUserId" style="min-width:16rem">
-                    PatientUserId
-                        <p-sortIcon field="patientUserId" />
+                    <th pSortableColumn="name" style="min-width:16rem">
+                        Name
+                        <p-sortIcon field="name" />
                     </th>
 
-                <th pSortableColumn="doctorUserId" style="min-width: 12rem">
-                DoctorUserId
-            <p-sortIcon field="doctorUserId" />
+                <th pSortableColumn="phone" style="min-width: 12rem">
+            Phone Number
+            <p-sortIcon field="phone" />
         </th>
     
-    <th pSortableColumn="HospitalId" style="width: 100%">
-    HospitalId
-            <p-sortIcon field="HospitalId" />
+    <th pSortableColumn="address" style="width: 100%">
+            Address
+            <p-sortIcon field="address" />
         </th>
-        
-
-        <th pSortableColumn="Appointmenttdate" style="width: 100%">
-        Appointmentdate
-            <p-sortIcon field="Appointmentdate" />
-        </th>
-        
         <th style="min-width: 12rem " > Edit </th>
 
         </tr>
 
             </ng-template>
-            <ng-template pTemplate="body" let-appointments>
-  <tr>
-    <td style="width: 3rem">
-      <p-tableCheckbox [value]="appointments" />
-    </td>
-    <td style="min-width: 16rem">{{ appointments.patientUserId }}</td>
-    <td>{{ appointments.doctorUserId }}</td>
-    <td>{{ appointments.hospitalId }}</td>
-    <td>{{ appointments.appointmentDate | date: 'short' }}</td>
-    <td>
-      <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
-        (click)="editAppointments(appointments)" />
-    </td>
-  </tr>
-</ng-template>
+            <ng-template #body let-results>
+                <tr>
+                    <td style="width: 3rem">
+                        <p-tableCheckbox [value]="results" />
+                    </td>
 
+                    <td style="min-width: 16rem">{{ results.name }}</td>
+                    <td>{{ results.phone }}</td>
+                    <td>{{ results.address }}</td>
+                    <td>
+                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editResults(results)" />
+                    </td>
+                </tr>
+            </ng-template>
         </p-table>
 <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, ResultsService, ConfirmationService]
 })
-export class AppointmentsList implements OnInit {
+export class ResultsList implements OnInit {
 
 
-appointments: any;
+results: any;
 
 
 @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-@Output() editEvent = new EventEmitter<AppointmentsModel>();
+@Output() editEvent = new EventEmitter<ResultsModel>();
 
 
 
-    appointmentss: any[] = [];
+    resultss: any[] = [];
 
-    selectedProduct!: AppointmentsModel[];
+    selectedProduct!: ResultsModel[];
 
-    selectedProducts!: AppointmentsModel[] | null;
+    selectedProducts!: ResultsModel[] | null;
 
     submitted: boolean = false;
 
@@ -208,7 +198,7 @@ appointments: any;
 
     constructor(
 
-        @Inject(AppointmentsService) private appointmentsService: AppointmentsService,
+        @Inject(ResultsService) private resultsService: ResultsService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -221,16 +211,16 @@ appointments: any;
         this.loadDemoData();
     }
 
-    loadAppointmentss(): void {
-        this.appointmentsService.getAppointments().subscribe(data => {
-          this.appointments = data;
+    loadResultss(): void {
+        this.resultsService.getResultss().subscribe(data => {
+          this.results = data;
         });
       }
 
     loadDemoData() {
-        this.appointmentsService.getAppointments().subscribe({
+        this.resultsService.getResultss().subscribe({
             next: (data: any) => {
-                this.appointmentss = data;
+                this.resultss = data;
                 console.log(data);
             },
             error: (err: any) => console.log(err)
@@ -247,8 +237,8 @@ appointments: any;
     }
 
 
-    editAppointments(appointments: any) { 
-        this.editEvent.emit(appointments);  
+    editResults(results: any) { 
+        this.editEvent.emit(results);  
         this.changeProductDialogvisibile.emit(true); 
       }
       
@@ -256,13 +246,13 @@ appointments: any;
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected appointmentss?',
+            message: 'Are you sure you want to delete the selected resultss?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
 
             accept: ( ) => { 
                 
-                this.appointmentsService.deleteAppointments(this.selectedProduct[0].id).subscribe({
+                this.resultsService.deleteResults(this.selectedProduct[0].id).subscribe({
                     next: (data: any) => {
                         // this.loadDemoData();
                         this.messageService.add({
@@ -286,10 +276,10 @@ appointments: any;
         this.submitted = false;
     }
 
-    @Output() deleteProductEvent = new EventEmitter<AppointmentsModel>();
+    @Output() deleteProductEvent = new EventEmitter<ResultsModel>();
 
 
-    deleteProduct(appointments: AppointmentsModel) {
+    deleteProduct(results: ResultsModel) {
     }
 
 }

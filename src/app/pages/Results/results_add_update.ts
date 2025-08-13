@@ -20,11 +20,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Message } from "primeng/message";
 import { OnChanges, SimpleChanges } from '@angular/core';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsService } from '../service/appointments.service';
-
-
-
+import { ResultsModel } from './results_model';
+import { ResultsService } from '../service/results.service';
 
 interface Column {
     field: string;
@@ -38,7 +35,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-appointments-add-update',
+    selector: 'app-results-add-update',
     standalone: true,
     imports: [
     CommonModule,
@@ -66,52 +63,39 @@ interface ExportColumn {
     template: `
 
 
-<p-dialog [(visible)]="appointmentsDialog" [style]="{ width: '450px' }" header="Add Appointments" [modal]="true" (onHide)='hideDialog()'>
+<p-dialog [(visible)]="resultsDialog" [style]="{ width: '450px' }" header="Add Results" [modal]="true" (onHide)='hideDialog()'>
 
  <form [formGroup]="exampleForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full sm:w-56">
     <div class="flex flex-col gap-1">
-        <input pInputText type="text" id="patientUserId" placeholder="patientUserId" formControlName="patientUserId" [invalid]="isInvalid('patientUserId')" />
-        @if (isInvalid('patientUserId')) {
+        <input pInputText type="text" id="Name" placeholder="Results Name" formControlName="Name" [invalid]="isInvalid('Name')" />
+        @if (isInvalid('Name')) {
             <p-message severity="error" size="small" variant="simple">lName is required.</p-message>
         }
     </div>
     <div class="flex flex-col gap-1">
-        <input pInputText type="text" id="doctorUserId" placeholder="doctorUserId" formControlName="doctorUserId" [invalid]="isInvalid('doctorUserId')" />
-        @if (isInvalid('doctorUserId')) {
-            @if (exampleForm.get('doctorUserId')?.errors?.['doctorUserId']) {
+        <input pInputText type="text" id="address" placeholder="Address" formControlName="address" [invalid]="isInvalid('address')" />
+        @if (isInvalid('address')) {
+            @if (exampleForm.get('address')?.errors?.['required']) {
                 <p-message severity="error" size="small" variant="simple">address is required.</p-message>
             }
-            @if (exampleForm.get('doctorUserId')?.errors?.['doctorUserId']) {
+            @if (exampleForm.get('address')?.errors?.['address']) {
                 <p-message severity="error" size="small" variant="simple">Please enter a valid address.</p-message>
             }
         }
 
         <div class="flex flex-col gap-1">
-  <input pInputText type="text" id="HospitalId" placeholder="HospitalId" formControlName="hospitalId" [invalid]="isInvalid('HospitalId')" />
-  @if (isInvalid('HospitalId')) {
-    @if (exampleForm.get('HospitalId')?.errors?.['required']) {
+  <input pInputText type="text" id="phone" placeholder="Phone Number" formControlName="phone" [invalid]="isInvalid('phone')" />
+  @if (isInvalid('phone')) {
+    @if (exampleForm.get('phone')?.errors?.['required']) {
       <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
     }
-    @if (exampleForm.get('HospitalId')?.errors?.['pattern']) {
-      <p-message severity="error" size="small" variant="simple">Please enter a valid phone number.</p-message>
-    }
-  }
-
-  <div class="flex flex-col gap-1">
-  <input pInputText type="text" id="AppointmentDate" placeholder="AppointmentDate" formControlName="appointmentDate" [invalid]="isInvalid('AppointmentDate')" />
-  @if (isInvalid('AppointmentDate')) {
-    @if (exampleForm.get('AppointmentDate')?.errors?.['required']) {
-      <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
-    }
-    @if (exampleForm.get('AppointmentDate')?.errors?.['pattern']) {
+    @if (exampleForm.get('phone')?.errors?.['pattern']) {
       <p-message severity="error" size="small" variant="simple">Please enter a valid phone number.</p-message>
     }
   }
 </div>
 
     </div>
-
-        </div>
 
   <button pButton type="save" icon="pi pi-check" label="Save"></button>
 </form> 
@@ -121,21 +105,21 @@ interface ExportColumn {
             </ng-template>
         </p-dialog>
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, ResultsService, ConfirmationService]
 
 
     
 })
-export class AppointmentsAddUpdate implements OnInit, OnChanges {
+export class ResultsAddUpdate implements OnInit, OnChanges {
     
-    @Input() appointmentsDialog: boolean = false;
-    @Input() editAppointmentsData!: AppointmentsModel;
+    @Input() resultsDialog: boolean = false;
+    @Input() editResultsData!: ResultsModel;
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-    @Output() appointmentsSaved = new EventEmitter<void>();
+    @Output() resultsSaved = new EventEmitter<void>();
 
 
-    appointments!: AppointmentsModel;
+    results!: ResultsModel;
 
     submitted: boolean = false;
 
@@ -150,7 +134,7 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
 
 
     constructor(
-        private appointmentsService: AppointmentsService,
+        private resultsService: ResultsService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private fb: FormBuilder
@@ -162,37 +146,35 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
 
     
         ngOnInit() {
-                this.exampleForm = this.fb.group({
-                    patientUserId: ['', Validators.required],
-                    doctorUserId: ['', [Validators.required, Validators.required]],
-                    hospitalId: ['', [Validators.required]],
-                    appointmentDate: ['', [Validators.required]]
-                });
-            }
+            this.exampleForm = this.fb.group({
+              Name: ['', Validators.required],
+              address: ['', [Validators.required, Validators.required]],
+              phone: ['', [Validators.required, Validators.pattern(/^\d{10,15}$/)]]
+            });
+          }
 
           ngOnChanges(changes: SimpleChanges): void {
-            if (changes['appointmentsDialog'] && changes['appointmentsDialog'].currentValue) {
+            if (changes['resultsDialog'] && changes['resultsDialog'].currentValue) {
                 debugger
-   if (this.editAppointmentsData) {
+   if (this.editResultsData) {
     this.exampleForm.patchValue({
-        patientUserId: this.editAppointmentsData.patientUserId,
-        doctorUserId: this.editAppointmentsData.doctorUserId,
-        hospitalId: this.editAppointmentsData.hospitalId,
-        appointmentDate: this.editAppointmentsData.appointmentDate
-
+        appointmentId: this.editResultsData.appointmentId,
+        fileName: this.editResultsData.fileName,
+        filePath: this.editResultsData.filePath,
+        createdAt: this.editResultsData.createdAt,
       });
-      this.appointments = { ...this.editAppointmentsData }; // update mode
+      this.results = { ...this.editResultsData }; // update mode
 } else {
-        this.appointments = {
-            patientUserId: '',
-            doctorUserId: '',
-            hospitalId: '',
-            appointmentDate: new Date(), // add mode
-            id: null // add mode
-        };
-        this.exampleForm.reset(); // add mode
+    this.results = {
+      id: '',
+      appointmentId: '',
+      fileName: '',
+      filePath: '',
+      createdAt: new Date() // add mode
+    };
+    this.exampleForm.reset(); // add mode
 
-                        } 
+            } 
           }
         }
           
@@ -210,44 +192,44 @@ onSubmit() {
                 
                 const formData = this.exampleForm.value;
         
-                const appointments: AppointmentsModel = {
-                    ...this.appointments,
-                    patientUserId: formData.patientUserId,
-                    doctorUserId: formData.doctorUserId,
-                    hospitalId: formData.hospitalId,
-                    appointmentDate: formData.appointmentDate
+                const results: ResultsModel = {
+                    ...this.results,
+                    appointmentId: formData.appointmentId,
+                    fileName: formData.fileName,
+                    filePath: formData.filePath,
+                    createdAt: formData.createdAt,
                 };
         
-                if (this.appointments?.id) {
-                    this.appointmentsService.updateAppointments(appointments).subscribe({
+                if (this.results?.id) {
+                    this.resultsService.updateResults(results).subscribe({
                         next: () => {
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Updated',
-                                detail: 'Appointments updated successfully'
+                                detail: 'Results updated successfully'
                             });
-                            this.appointmentsSaved.emit();
+                            this.resultsSaved.emit();
                             this.closeDialog();
                         },
                         error: () => {
                             this.messageService.add({
                                 severity: 'error',
                                 summary: 'Error',
-                                detail: 'Failed to update appointments'
+                                detail: 'Failed to update results'
                             });
                         }
                     });
                 } else {
                     
-                    this.appointmentsService.addAppointments(appointments).subscribe({
+                    this.resultsService.addResults(results).subscribe({
                         next: () => {
                             
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Added',
-                                detail: 'Appointments added successfully'
+                                detail: 'Results added successfully'
                             });
-                            this.appointmentsSaved.emit(); 
+                            this.resultsSaved.emit(); 
                             this.closeDialog();
                             this.exampleForm.reset(); 
                         },
@@ -255,7 +237,7 @@ onSubmit() {
                             this.messageService.add({
                                 severity: 'error',
                                 summary: 'Error',
-                                detail: 'Failed to add appointments'
+                                detail: 'Failed to add results'
                             });
                         }
                     });
@@ -277,20 +259,24 @@ onSubmit() {
     }
     
     openNew() {
-        this.appointments = { patientUserId: '', doctorUserId: '', hospitalId: '', appointmentDate: new Date(), id: null };
+        this.results = {   id: '',
+        appointmentId: '',
+        fileName: '',
+        filePath: '',
+        createdAt: new Date() };
         this.submitted = false;
-        this.appointmentsDialog = true;
+        this.resultsDialog = true;
     }
 
-editAppointments(appointments: AppointmentsModel) {
-  this.appointments = { ...appointments };  
-  this.appointmentsDialog = true;
+editResults(results: ResultsModel) {
+  this.results = { ...results };  
+  this.resultsDialog = true;
 
   this.exampleForm.patchValue({
-    patientUserId: appointments.patientUserId,
-    doctorUserId: appointments.doctorUserId,
-    hospitalId: appointments.hospitalId,
-    appointmentDate: appointments.appointmentDate
+    appointmentId: results.appointmentId,
+    fileName: results.fileName,
+    filePath: results.filePath,
+    createdAt: results.createdAt,
   });
 }
 
@@ -311,26 +297,30 @@ editAppointments(appointments: AppointmentsModel) {
 
     saveProduct() {
         this.submitted = true;
-        if (this.appointments.id?.trim()) {
-            if (this.appointments.id) {
+        if (this.results.appointmentId?.trim()) {
+            if (this.results.id) {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Updated',
+                    detail: 'Results Updated',
                     life: 3000
                 });
             } else {
-                this.appointments.id = this.createId();
+                this.results.id = this.createId();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Created',
+                    detail: 'Results Created',
                     life: 3000
                 });
             }
 
-            this.appointmentsDialog = false;
-            this.appointments = { patientUserId: '', doctorUserId: '', hospitalId: '', appointmentDate: new Date(), id: null };
+            this.resultsDialog = false;
+            this.results = { id: '',
+            appointmentId: '',
+            fileName: '',
+            filePath: '',
+            createdAt: new Date() };
         }
     }
 }

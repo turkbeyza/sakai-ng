@@ -20,11 +20,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Message } from "primeng/message";
 import { OnChanges, SimpleChanges } from '@angular/core';
-import { AppointmentsModel } from './appointments_model';
-import { AppointmentsService } from '../service/appointments.service';
-
-
-
+import { FavoritesModel } from './favorites_model';
+import { FavoritesService } from '../service/favorites_service';
 
 interface Column {
     field: string;
@@ -38,7 +35,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-appointments-add-update',
+    selector: 'app-favorites-add-update',
     standalone: true,
     imports: [
     CommonModule,
@@ -66,7 +63,7 @@ interface ExportColumn {
     template: `
 
 
-<p-dialog [(visible)]="appointmentsDialog" [style]="{ width: '450px' }" header="Add Appointments" [modal]="true" (onHide)='hideDialog()'>
+<p-dialog [(visible)]="favoritesDialog" [style]="{ width: '450px' }" header="Add Favorites" [modal]="true" (onHide)='hideDialog()'>
 
  <form [formGroup]="exampleForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full sm:w-56">
     <div class="flex flex-col gap-1">
@@ -78,7 +75,7 @@ interface ExportColumn {
     <div class="flex flex-col gap-1">
         <input pInputText type="text" id="doctorUserId" placeholder="doctorUserId" formControlName="doctorUserId" [invalid]="isInvalid('doctorUserId')" />
         @if (isInvalid('doctorUserId')) {
-            @if (exampleForm.get('doctorUserId')?.errors?.['doctorUserId']) {
+            @if (exampleForm.get('doctorUserId')?.errors?.['required']) {
                 <p-message severity="error" size="small" variant="simple">address is required.</p-message>
             }
             @if (exampleForm.get('doctorUserId')?.errors?.['doctorUserId']) {
@@ -86,32 +83,19 @@ interface ExportColumn {
             }
         }
 
-        <div class="flex flex-col gap-1">
-  <input pInputText type="text" id="HospitalId" placeholder="HospitalId" formControlName="hospitalId" [invalid]="isInvalid('HospitalId')" />
-  @if (isInvalid('HospitalId')) {
-    @if (exampleForm.get('HospitalId')?.errors?.['required']) {
+        <!-- <div class="flex flex-col gap-1">
+  <input pInputText type="text" id="phone" placeholder="Phone Number" formControlName="phone" [invalid]="isInvalid('phone')" />
+  @if (isInvalid('phone')) {
+    @if (exampleForm.get('phone')?.errors?.['required']) {
       <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
     }
-    @if (exampleForm.get('HospitalId')?.errors?.['pattern']) {
+    @if (exampleForm.get('phone')?.errors?.['pattern']) {
       <p-message severity="error" size="small" variant="simple">Please enter a valid phone number.</p-message>
     }
   }
-
-  <div class="flex flex-col gap-1">
-  <input pInputText type="text" id="AppointmentDate" placeholder="AppointmentDate" formControlName="appointmentDate" [invalid]="isInvalid('AppointmentDate')" />
-  @if (isInvalid('AppointmentDate')) {
-    @if (exampleForm.get('AppointmentDate')?.errors?.['required']) {
-      <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
-    }
-    @if (exampleForm.get('AppointmentDate')?.errors?.['pattern']) {
-      <p-message severity="error" size="small" variant="simple">Please enter a valid phone number.</p-message>
-    }
-  }
-</div>
+</div> -->
 
     </div>
-
-        </div>
 
   <button pButton type="save" icon="pi pi-check" label="Save"></button>
 </form> 
@@ -121,21 +105,21 @@ interface ExportColumn {
             </ng-template>
         </p-dialog>
     `,
-    providers: [MessageService, AppointmentsService, ConfirmationService]
+    providers: [MessageService, FavoritesService, ConfirmationService]
 
 
     
 })
-export class AppointmentsAddUpdate implements OnInit, OnChanges {
+export class FavoritesAddUpdate implements OnInit, OnChanges {
     
-    @Input() appointmentsDialog: boolean = false;
-    @Input() editAppointmentsData!: AppointmentsModel;
+    @Input() favoritesDialog: boolean = false;
+    @Input() editFavoritesData!: FavoritesModel;
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
-    @Output() appointmentsSaved = new EventEmitter<void>();
+    @Output() favoritesSaved = new EventEmitter<void>();
 
 
-    appointments!: AppointmentsModel;
+    favorites!: FavoritesModel;
 
     submitted: boolean = false;
 
@@ -150,7 +134,7 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
 
 
     constructor(
-        private appointmentsService: AppointmentsService,
+        private favoritesService: FavoritesService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private fb: FormBuilder
@@ -162,37 +146,30 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
 
     
         ngOnInit() {
-                this.exampleForm = this.fb.group({
-                    patientUserId: ['', Validators.required],
-                    doctorUserId: ['', [Validators.required, Validators.required]],
-                    hospitalId: ['', [Validators.required]],
-                    appointmentDate: ['', [Validators.required]]
-                });
-            }
+            this.exampleForm = this.fb.group({
+              patientUserId: ['', Validators.required],
+              doctorUserId: ['', [Validators.required, Validators.required]],
+            });
+          }
 
           ngOnChanges(changes: SimpleChanges): void {
-            if (changes['appointmentsDialog'] && changes['appointmentsDialog'].currentValue) {
+            if (changes['favoritesDialog'] && changes['favoritesDialog'].currentValue) {
                 debugger
-   if (this.editAppointmentsData) {
+   if (this.editFavoritesData) {
     this.exampleForm.patchValue({
-        patientUserId: this.editAppointmentsData.patientUserId,
-        doctorUserId: this.editAppointmentsData.doctorUserId,
-        hospitalId: this.editAppointmentsData.hospitalId,
-        appointmentDate: this.editAppointmentsData.appointmentDate
-
+        patientUserId: this.editFavoritesData.patientUserId,
+        doctorUserId: this.editFavoritesData.doctorUserId,
       });
-      this.appointments = { ...this.editAppointmentsData }; // update mode
+      this.favorites = { ...this.editFavoritesData }; // update mode
 } else {
-        this.appointments = {
-            patientUserId: '',
-            doctorUserId: '',
-            hospitalId: '',
-            appointmentDate: new Date(), // add mode
-            id: null // add mode
-        };
-        this.exampleForm.reset(); // add mode
+    this.favorites = {
+      id: '',
+      patientUserId: '',
+      doctorUserId: '',
+    };
+    this.exampleForm.reset(); // add mode
 
-                        } 
+            } 
           }
         }
           
@@ -210,44 +187,42 @@ onSubmit() {
                 
                 const formData = this.exampleForm.value;
         
-                const appointments: AppointmentsModel = {
-                    ...this.appointments,
+                const favorites: FavoritesModel = {
+                    ...this.favorites,
                     patientUserId: formData.patientUserId,
                     doctorUserId: formData.doctorUserId,
-                    hospitalId: formData.hospitalId,
-                    appointmentDate: formData.appointmentDate
                 };
         
-                if (this.appointments?.id) {
-                    this.appointmentsService.updateAppointments(appointments).subscribe({
+                if (this.favorites?.id) {
+                    this.favoritesService.updateFavorites(favorites).subscribe({
                         next: () => {
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Updated',
-                                detail: 'Appointments updated successfully'
+                                detail: 'Favorites updated successfully'
                             });
-                            this.appointmentsSaved.emit();
+                            this.favoritesSaved.emit();
                             this.closeDialog();
                         },
                         error: () => {
                             this.messageService.add({
                                 severity: 'error',
                                 summary: 'Error',
-                                detail: 'Failed to update appointments'
+                                detail: 'Failed to update favorites'
                             });
                         }
                     });
                 } else {
                     
-                    this.appointmentsService.addAppointments(appointments).subscribe({
+                    this.favoritesService.addFavorites(favorites).subscribe({
                         next: () => {
                             
                             this.messageService.add({
                                 severity: 'success',
                                 summary: 'Added',
-                                detail: 'Appointments added successfully'
+                                detail: 'Favorites added successfully'
                             });
-                            this.appointmentsSaved.emit(); 
+                            this.favoritesSaved.emit(); 
                             this.closeDialog();
                             this.exampleForm.reset(); 
                         },
@@ -255,7 +230,7 @@ onSubmit() {
                             this.messageService.add({
                                 severity: 'error',
                                 summary: 'Error',
-                                detail: 'Failed to add appointments'
+                                detail: 'Failed to add favorites'
                             });
                         }
                     });
@@ -277,20 +252,18 @@ onSubmit() {
     }
     
     openNew() {
-        this.appointments = { patientUserId: '', doctorUserId: '', hospitalId: '', appointmentDate: new Date(), id: null };
+        this.favorites = { patientUserId: '', doctorUserId: '' };
         this.submitted = false;
-        this.appointmentsDialog = true;
+        this.favoritesDialog = true;
     }
 
-editAppointments(appointments: AppointmentsModel) {
-  this.appointments = { ...appointments };  
-  this.appointmentsDialog = true;
+editFavorites(favorites: FavoritesModel) {
+  this.favorites = { ...favorites };  
+  this.favoritesDialog = true;
 
   this.exampleForm.patchValue({
-    patientUserId: appointments.patientUserId,
-    doctorUserId: appointments.doctorUserId,
-    hospitalId: appointments.hospitalId,
-    appointmentDate: appointments.appointmentDate
+    patientUserId: favorites.patientUserId,
+    doctorUserId: favorites.doctorUserId,
   });
 }
 
@@ -311,26 +284,26 @@ editAppointments(appointments: AppointmentsModel) {
 
     saveProduct() {
         this.submitted = true;
-        if (this.appointments.id?.trim()) {
-            if (this.appointments.id) {
+        if (this.favorites.patientUserId?.trim()) {
+            if (this.favorites.id) {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Updated',
+                    detail: 'Favorites Updated',
                     life: 3000
                 });
             } else {
-                this.appointments.id = this.createId();
+                this.favorites.id = this.createId();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Appointments Created',
+                    detail: 'Favorites Created',
                     life: 3000
                 });
             }
 
-            this.appointmentsDialog = false;
-            this.appointments = { patientUserId: '', doctorUserId: '', hospitalId: '', appointmentDate: new Date(), id: null };
+            this.favoritesDialog = false;
+            this.favorites = { patientUserId: '', doctorUserId: '' };
         }
     }
 }

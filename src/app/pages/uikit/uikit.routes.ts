@@ -15,6 +15,9 @@ import { Hospital } from '../Hospital/hospital';
 import { Doctor } from '../Doctor/doctor';
 import { Patient } from '../Patient/patient';
 import { Appointments } from '../Appointments/appointments';
+import { Favorites } from '../Favorites/favorites';
+import { Results } from '../Results/results';
+
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
@@ -22,6 +25,8 @@ export default [
     { path: 'patient', data: { breadcrumb: 'patient' }, component: Patient },
     { path: 'doctor', data: { breadcrumb: 'doctor' }, component: Doctor },
     { path: 'appointments', data: { breadcrumb: 'appointments' }, component: Appointments },
+    { path: 'favorites', data: { breadcrumb: 'favorites' }, component: Favorites},
+    { path: 'results', data: { breadcrumb: 'results' }, component: Results },
     { path: 'charts', data: { breadcrumb: 'Charts' }, component: ChartDemo },
     { path: 'file', data: { breadcrumb: 'File' }, component: FileDemo },
     { path: 'formlayout', data: { breadcrumb: 'Form Layout' }, component: FormLayoutDemo },

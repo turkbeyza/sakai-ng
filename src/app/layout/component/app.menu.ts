@@ -33,6 +33,8 @@ export class AppMenu {
                     { label: 'Doctor', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/doctor'] },
                     { label: 'Patient', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/patient'] },
                     { label: 'Appointments', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/appointments'] },
+                    { label: 'Favorites', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/favorites'] },
+                    { label: 'Results', icon: 'pi pi-fw pi-home', routerLink: ['/uikit/results'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/uikit/button'] },
                     { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
