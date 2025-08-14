@@ -131,6 +131,7 @@ export class AppointmentsAddUpdate implements OnInit, OnChanges {
     
     @Input() appointmentsDialog: boolean = false;
     @Input() editAppointmentsData!: AppointmentsModel;
+    
 
     @Output() changeProductDialogvisibile = new EventEmitter<boolean>();
     @Output() appointmentsSaved = new EventEmitter<void>();

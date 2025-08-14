@@ -306,16 +306,28 @@ export class AppointmentsList implements OnInit {
         });
     }
 
-    // Helper methodlar - ID'den isim almak için
+    // // Helper methodlar - ID'den isim almak için
+    // getPatientName(patientId: any): string {
+    //     const patient = this.patients.find(p => p.id === patientId);
+    //     return patient ? patient.name : 'Unknown Patient';
+    // }
+
+    // getDoctorName(doctorId: any): string {
+    //     const doctor = this.doctors.find(d => d.id === doctorId);
+    //     return doctor ? `${doctor.name} ${doctor.surname}` : 'Unknown Doctor';
+    // }
+
+
     getPatientName(patientId: any): string {
         const patient = this.patients.find(p => p.id === patientId);
-        return patient ? patient.name : 'Unknown Patient';
-    }
-
-    getDoctorName(doctorId: any): string {
+        return patient ? `${patient.name} ${patient.surname}` : 'Unknown Patient';
+      }
+      
+      getDoctorName(doctorId: any): string {
         const doctor = this.doctors.find(d => d.id === doctorId);
         return doctor ? `${doctor.name} ${doctor.surname}` : 'Unknown Doctor';
-    }
+      }
+      
 
     getHospitalName(hospitalId: any): string {
         const hospital = this.hospitals.find(h => h.id === hospitalId);

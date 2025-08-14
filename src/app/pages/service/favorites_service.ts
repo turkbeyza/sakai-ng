@@ -17,7 +17,8 @@ interface InventoryStatus {
 export class FavoritesService {
     httpClient: any;
 
-    
+    private apiUrl = 'http://localhost:5077/api';
+
     getFavorites() {
         Observable<any> 
         return this.http.get('http://localhost:5077/api/Favorite');
@@ -31,14 +32,18 @@ export class FavoritesService {
         return this.http.post<any>('http://localhost:5077/api/Favorite', favorite);
       }
 
-      updateFavorites(favorite: FavoritesModel): Observable<any> {
+    updateFavorites(favorite: FavoritesModel): Observable<any> {
         return this.http.put(`http://localhost:5077/api/Favorite/${favorite.id}`, favorite);
         
       }      
-    
-    apiUrl(apiUrl: any): Observable<any> {
-        throw new Error('Method not implemented.');
+     getDoctors(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/User/doctors`);
     }
+
+    getPatients(): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/User/patients`);
+  }
+
 
 
     constructor(private http: HttpClient) {}

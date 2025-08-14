@@ -117,8 +117,7 @@ export class Results implements OnInit {
     openNew() {
         this.results = { id: '',
         appointmentId: '',
-        fileName: '',
-        filePath: '',
+        file: null,
         createdAt: new Date() };
         this.submitted = false;
         this.resultsDialog = true;
@@ -175,8 +174,7 @@ export class Results implements OnInit {
                 this.resultss.set(this.resultss().filter((val) => val.id !== results.id));
                 this.results = {id: '',
                 appointmentId: '',
-                fileName: '',
-                filePath: '',
+                file: null,
                 createdAt: new Date() }; // Initialize with required properties
                 this.messageService.add({
                     severity: 'success',

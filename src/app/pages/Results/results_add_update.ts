@@ -22,6 +22,7 @@ import { Message } from "primeng/message";
 import { OnChanges, SimpleChanges } from '@angular/core';
 import { ResultsModel } from './results_model';
 import { ResultsService } from '../service/results.service';
+import { FileSelectEvent, FileUploadEvent, FileUploadModule, UploadEvent } from 'primeng/fileupload';
 
 interface Column {
     field: string;
@@ -58,6 +59,7 @@ interface ExportColumn {
     ConfirmDialogModule,
     ReactiveFormsModule,
     Message,
+    FileUploadModule 
     
 ],
     template: `
@@ -67,34 +69,66 @@ interface ExportColumn {
 
  <form [formGroup]="exampleForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 w-full sm:w-56">
     <div class="flex flex-col gap-1">
-        <input pInputText type="text" id="Name" placeholder="Results Name" formControlName="Name" [invalid]="isInvalid('Name')" />
-        @if (isInvalid('Name')) {
+        <input pInputText type="text" id="appointmentId" placeholder="AppointmentId" formControlName="appointmentId" [invalid]="isInvalid('appointmentId')" />
+        @if (isInvalid('appointmentId')) {
             <p-message severity="error" size="small" variant="simple">lName is required.</p-message>
         }
     </div>
     <div class="flex flex-col gap-1">
-        <input pInputText type="text" id="address" placeholder="Address" formControlName="address" [invalid]="isInvalid('address')" />
-        @if (isInvalid('address')) {
-            @if (exampleForm.get('address')?.errors?.['required']) {
-                <p-message severity="error" size="small" variant="simple">address is required.</p-message>
+        <input pInputText type="text" id="fileName" placeholder="FileName" formControlName="fileName" [invalid]="isInvalid('fileName')" />
+        @if (isInvalid('fileName')) {
+            @if (exampleForm.get('fileName')?.errors?.['required']) {
+                <p-message severity="error" size="small" variant="simple">fileName is required.</p-message>
             }
-            @if (exampleForm.get('address')?.errors?.['address']) {
-                <p-message severity="error" size="small" variant="simple">Please enter a valid address.</p-message>
+            @if (exampleForm.get('fileName')?.errors?.['fileName']) {
+                <p-message severity="error" size="small" variant="simple">Please enter a valid fileName.</p-message>
             }
         }
 
         <div class="flex flex-col gap-1">
-  <input pInputText type="text" id="phone" placeholder="Phone Number" formControlName="phone" [invalid]="isInvalid('phone')" />
-  @if (isInvalid('phone')) {
-    @if (exampleForm.get('phone')?.errors?.['required']) {
-      <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
-    }
-    @if (exampleForm.get('phone')?.errors?.['pattern']) {
-      <p-message severity="error" size="small" variant="simple">Please enter a valid phone number.</p-message>
-    }
-  }
+        <div class="flex flex-col gap-1">
+
+        
+   <!-- <p-fileUpload 
+    name="file" 
+    mode="basic" 
+    chooseLabel="Choose PDF" 
+    chooseIcon="pi pi-upload" 
+    accept="application/pdf" 
+    [auto]="true"
+    maxFileSize="5000000"
+    (onUpload)="onUpload($event)"
+    (onClear)="onFileClear()" />
+  @if (isInvalid('filePath')) {
+    <p-message severity="error" size="small" variant="simple">PDF file is required.</p-message>
+  } -->
+
+
+
+
+  <div class="card flex flex-wrap gap-6 items-center justify-between">
+    <p-toast />
+    <p-fileupload #fu (onSelect)='onSelectEvent($event)' mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"  accept="application/pdf" maxFileSize="1000000" (onUpload)="onUpload($event)" />
 </div>
 
+</div> 
+
+
+
+  <!-- <div class="flex flex-col gap-1">
+  <input pInputText type="text" id="createdAt" placeholder="CreatedAt" formControlName="createdAt" [invalid]="isInvalid('createdAt')" />
+  @if (isInvalid('createdAt')) {
+    @if (exampleForm.get('createdAt')?.errors?.['required']) {
+      <p-message severity="error" size="small" variant="simple">Phone number is required.</p-message>
+    }
+    @if (exampleForm.get('createdAt')?.errors?.['pattern']) {
+      <p-message severity="error" size="small" variant="simple">Please enter a valid filePath.</p-message>
+    } -->
+  <!-- }
+</div> -->
+
+
+</div>
     </div>
 
   <button pButton type="save" icon="pi pi-check" label="Save"></button>
@@ -111,6 +145,17 @@ interface ExportColumn {
     
 })
 export class ResultsAddUpdate implements OnInit, OnChanges {
+  
+  onUpload(event: UploadEvent) {
+    debugger
+    // this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded with Basic Mode' });
+}
+// onFileClear() {
+// throw new Error('Method not implemented.');
+// }
+// onFileSelect($event: FileSelectEvent) {
+// throw new Error('Method not implemented.');
+// }
     
     @Input() resultsDialog: boolean = false;
     @Input() editResultsData!: ResultsModel;
@@ -119,7 +164,7 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
     @Output() resultsSaved = new EventEmitter<void>();
 
 
-    results!: ResultsModel;
+    results!: ResultsModel
 
     submitted: boolean = false;
 
@@ -140,6 +185,9 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
         private fb: FormBuilder
     ) {}
 
+    onSelectEvent(event:FileSelectEvent){
+      this.exampleForm.get("file").setValue(event.files[0])
+    }
     exportCSV() {
         this.dt.exportCSV();
     }
@@ -147,9 +195,9 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
     
         ngOnInit() {
             this.exampleForm = this.fb.group({
-              Name: ['', Validators.required],
-              address: ['', [Validators.required, Validators.required]],
-              phone: ['', [Validators.required, Validators.pattern(/^\d{10,15}$/)]]
+              appointmentId: ['', Validators.required],
+              file: [null, [Validators.required, Validators.required]],
+              createdAt: ['',]
             });
           }
 
@@ -159,8 +207,7 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
    if (this.editResultsData) {
     this.exampleForm.patchValue({
         appointmentId: this.editResultsData.appointmentId,
-        fileName: this.editResultsData.fileName,
-        filePath: this.editResultsData.filePath,
+        file: this.editResultsData.file,
         createdAt: this.editResultsData.createdAt,
       });
       this.results = { ...this.editResultsData }; // update mode
@@ -168,8 +215,7 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
     this.results = {
       id: '',
       appointmentId: '',
-      fileName: '',
-      filePath: '',
+      file: null,
       createdAt: new Date() // add mode
     };
     this.exampleForm.reset(); // add mode
@@ -186,71 +232,71 @@ export class ResultsAddUpdate implements OnInit, OnChanges {
       }
       
 
-onSubmit() {
+// onSubmit() {
         
-            if (this.exampleForm.valid) {
+//             if (this.exampleForm.valid) {
                 
-                const formData = this.exampleForm.value;
+//                 const formData = this.exampleForm.value;
         
-                const results: ResultsModel = {
-                    ...this.results,
-                    appointmentId: formData.appointmentId,
-                    fileName: formData.fileName,
-                    filePath: formData.filePath,
-                    createdAt: formData.createdAt,
-                };
+//                 const results: ResultsModel = {
+//                     ...this.results,
+//                     appointmentId: formData.appointmentId,
+//                     fileName: formData.fileName,
+//                     filePath: formData.filePath,
+//                     createdAt: formData.createdAt,
+//                 };
         
-                if (this.results?.id) {
-                    this.resultsService.updateResults(results).subscribe({
-                        next: () => {
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Updated',
-                                detail: 'Results updated successfully'
-                            });
-                            this.resultsSaved.emit();
-                            this.closeDialog();
-                        },
-                        error: () => {
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Error',
-                                detail: 'Failed to update results'
-                            });
-                        }
-                    });
-                } else {
+//                 if (this.results?.id) {
+//                     this.resultsService.updateResults(results).subscribe({
+//                         next: () => {
+//                             this.messageService.add({
+//                                 severity: 'success',
+//                                 summary: 'Updated',
+//                                 detail: 'Results updated successfully'
+//                             });
+//                             this.resultsSaved.emit();
+//                             this.closeDialog();
+//                         },
+//                         error: () => {
+//                             this.messageService.add({
+//                                 severity: 'error',
+//                                 summary: 'Error',
+//                                 detail: 'Failed to update results'
+//                             });
+//                         }
+//                     });
+//                 } else {
                     
-                    this.resultsService.addResults(results).subscribe({
-                        next: () => {
+//                     this.resultsService.addResults(results).subscribe({
+//                         next: () => {
                             
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Added',
-                                detail: 'Results added successfully'
-                            });
-                            this.resultsSaved.emit(); 
-                            this.closeDialog();
-                            this.exampleForm.reset(); 
-                        },
-                        error: () => {
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Error',
-                                detail: 'Failed to add results'
-                            });
-                        }
-                    });
-                }
-            } else {
-                this.exampleForm.markAllAsTouched();
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Validation Error',
-                    detail: 'Please complete the form before submitting.'
-                });
-            }
-        }
+//                             this.messageService.add({
+//                                 severity: 'success',
+//                                 summary: 'Added',
+//                                 detail: 'Results added successfully'
+//                             });
+//                             this.resultsSaved.emit(); 
+//                             this.closeDialog();
+//                             this.exampleForm.reset(); 
+//                         },
+//                         error: () => {
+//                             this.messageService.add({
+//                                 severity: 'error',
+//                                 summary: 'Error',
+//                                 detail: 'Failed to add results'
+//                             });
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 this.exampleForm.markAllAsTouched();
+//                 this.messageService.add({
+//                     severity: 'warn',
+//                     summary: 'Validation Error',
+//                     detail: 'Please complete the form before submitting.'
+//                 });
+//             }
+//         }
 
 
     closeDialog() {
@@ -261,8 +307,7 @@ onSubmit() {
     openNew() {
         this.results = {   id: '',
         appointmentId: '',
-        fileName: '',
-        filePath: '',
+        file: null,
         createdAt: new Date() };
         this.submitted = false;
         this.resultsDialog = true;
@@ -274,8 +319,7 @@ editResults(results: ResultsModel) {
 
   this.exampleForm.patchValue({
     appointmentId: results.appointmentId,
-    fileName: results.fileName,
-    filePath: results.filePath,
+    file: results.file,
     createdAt: results.createdAt,
   });
 }
@@ -318,9 +362,92 @@ editResults(results: ResultsModel) {
             this.resultsDialog = false;
             this.results = { id: '',
             appointmentId: '',
-            fileName: '',
-            filePath: '',
+            file: null,
             createdAt: new Date() };
         }
     }
+
+    onFileSelect(event: FileSelectEvent) {
+        const file = event.files[0];
+        if (file) {
+          // Sadece dosya adını form'a set ediyoruz
+          // Eğer backend'e yükleme yapacaksan burada yükleme çağrısı yapabilirsin
+          this.exampleForm.patchValue({ filePath: file.name });
+        }
+      }
+      
+      onFileClear() {
+        this.exampleForm.patchValue({ filePath: '' });
+      }
+      
+      onSubmit() {
+        debugger
+        if (this.exampleForm.valid) {
+            const data = new FormData();
+            const fileToUpload = this.exampleForm.value.file as File;
+            data.append('file', fileToUpload, fileToUpload.name);
+            data.append('appointmentId', this.exampleForm.value.appointmentId);
+            data.append('createdAt', this.exampleForm.value.createdAt);
+
+
+
+          const formData = this.exampleForm.value;
+      
+          const results: ResultsModel = {
+            ...this.results,
+            appointmentId: formData.appointmentId,
+            file: formData.file,
+            createdAt: new Date() // CreatedAt otomatik atanıyor
+          };
+      
+          if (this.results?.id) {
+            this.resultsService.updateResults(results).subscribe({
+              next: () => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Updated',
+                  detail: 'Results updated successfully'
+                });
+                this.resultsSaved.emit();
+                this.closeDialog();
+              },
+              error: () => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: 'Failed to update results'
+                });
+              }
+            });
+          } else {
+            this.resultsService.addResults(data).subscribe({
+              next: () => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Added',
+                  detail: 'Results added successfully'
+                });
+                this.resultsSaved.emit();
+                this.closeDialog();
+                this.exampleForm.reset();
+              },
+              error: () => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: 'Failed to add results'
+                });
+              }
+            });
+          }
+        } else {
+          this.exampleForm.markAllAsTouched();
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Validation Error',
+            detail: 'Please complete the form before submitting.'
+          });
+        }
+      }
+      
 }

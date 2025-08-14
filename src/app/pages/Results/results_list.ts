@@ -71,9 +71,10 @@ interface ExportColumn {
             
             <ng-template pTemplate="body" let-results>
     <tr>
-      <td>{{ results.name }}</td>
-      <td>{{ results.address }}</td>
-      <td>{{ results.phone }}</td>
+      <td>{{ results.appointmentId }}</td>
+      <td>{{ results.fileName }}</td>
+      <td>{{ results.FilePath }}</td>
+      <td>{{ results.createdAt }}</td>
       <td>
       <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
   (click)="editResults(results)">
@@ -134,20 +135,27 @@ interface ExportColumn {
 
                     
 
-                    <th pSortableColumn="name" style="min-width:16rem">
-                        Name
-                        <p-sortIcon field="name" />
+                    <th pSortableColumn="appointmentId" style="min-width:16rem">
+                        AppointmentId
+                        <p-sortIcon field="appointmentId" />
                     </th>
 
-                <th pSortableColumn="phone" style="min-width: 12rem">
-            Phone Number
-            <p-sortIcon field="phone" />
+                <th pSortableColumn="FileName" style="min-width: 12rem">
+            File Name
+            <p-sortIcon field="fileName" />
         </th>
     
-    <th pSortableColumn="address" style="width: 100%">
-            Address
-            <p-sortIcon field="address" />
+    <th pSortableColumn="filePath" style="width: 100%">
+            File Path
+            <p-sortIcon field="filepath" />
         </th>
+
+         <th pSortableColumn="createdAt" style="width: 100%">
+            Created At
+            <p-sortIcon field="createdAt" />
+        </th> 
+
+
         <th style="min-width: 12rem " > Edit </th>
 
         </tr>
@@ -159,9 +167,10 @@ interface ExportColumn {
                         <p-tableCheckbox [value]="results" />
                     </td>
 
-                    <td style="min-width: 16rem">{{ results.name }}</td>
-                    <td>{{ results.phone }}</td>
-                    <td>{{ results.address }}</td>
+                    <td style="min-width: 16rem">{{ results.appointmentId }}</td>
+                    <td>{{ results.fileName }}</td>
+                    <td>{{ results.filePath }}</td>
+                    <td>{{ results.createdAt }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editResults(results)" />
                     </td>
